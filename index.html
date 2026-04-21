@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Xiomara Delilah Hussein</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+
+/* ── TOKENS ──────────────────────────────────────── */
+:root {
+  --bg:       #111111;
+  --bg-side:  #161616;
+  --fg:       #ebebeb;
+  --dim:      rgba(235,235,235,0.38);
+  --border:   rgba(235,235,235,0.09);
+  --side-w:   196px;
+  --strip-h:  88px;
+  --ease:     cubic-bezier(0.4,0,0.2,1);
+  --t:        0.32s;
+}
+
+/* ── RESET ───────────────────────────────────────── */
+*,*::before,*::after {
+  box-sizing: border-box; margin: 0; padding: 0;
+  user-select: none; -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+html,body { width:100%; height:100%; overflow:hidden; }
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg); color: var(--fg);
+  transition: background var(--t) var(--ease), color var(--t) var(--ease);
+}
+button { background:none; border:none; font-family:inherit; cursor:pointer; color:inherit; padding:0; }
+a      { color:inherit; text-decoration:none; }
+img    { display:block; max-width:100%; }
+
+/* ── ROOT LAYOUT ─────────────────────────────────── */
+.layout { display:flex; width:100%; height:100%; }
+
+/* ── SIDEBAR ─────────────────────────────────────── */
+.sidebar {
+  width: var(--side-w);
+  flex-shrink: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-side);
+  border-right: 1px solid var(--border);
+  padding: 1.6rem 1.5rem;
+  transition: background var(--t) var(--ease), border-color var(--t) var(--ease);
+  position: relative;
+  z-index: 10;
+}
+
+.sidebar__logo {
+  display: block;
+  line-height: 0;
+  margin-bottom: 2.8rem;
+}
+.sidebar__logo img {
+  height: 80px; width: auto;
+  filter: invert(1);
+  transition: filter var(--t) var(--ease);
+}
+
+.sidebar__nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.sidebar__btn {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  padding: 0.62rem 0;
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dim);
+  position: relative;
+  transition: color 0.18s ease;
+  text-align: left;
+}
+/* left-bar indicator */
+.sidebar__btn::before {
+  content: '';
+  position: absolute;
+  left: -1.5rem; top: 50%;
+  transform: translateY(-50%);
+  width: 2px; height: 0;
+  background: var(--fg);
+  transition: height 0.2s var(--ease);
+}
+.sidebar__btn:hover                 { color: var(--fg); }
+.sidebar__btn:hover::before         { height: 12px; }
+.sidebar__btn.is-active             { color: var(--fg); font-weight: 500; }
+.sidebar__btn.is-active::before     { height: 18px; }
+
+.sidebar__num {
+  font-size: 0.52rem;
+  opacity: 0.38;
+  font-weight: 300;
+  letter-spacing: 0.05em;
+}
+
+.sidebar__foot {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+.sidebar__clock {
+  font-size: 0.6rem;
+  letter-spacing: 0.06em;
+  color: var(--dim);
+  font-variant-numeric: tabular-nums;
+}
+.sidebar__theme {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dim);
+  transition: color 0.15s ease;
+}
+.sidebar__theme:hover { color: var(--fg); }
+.sidebar__theme-pip {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--fg);
+  opacity: 0.45;
+  flex-shrink: 0;
+}
+
+/* ── CANVAS ──────────────────────────────────────── */
+.canvas {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── PAGES ───────────────────────────────────────── */
+.page {
+  position: absolute; inset: 0;
+  opacity: 0; pointer-events: none;
+  transform: translateY(10px);
+  transition: opacity var(--t) var(--ease), transform var(--t) var(--ease);
+  overflow: hidden;
+}
+.page.is-on {
+  opacity: 1; pointer-events: all;
+  transform: translateY(0);
+}
+/* work page uses flex column internally */
+#pg-work { display: flex; flex-direction: column; }
+
+/* ── CANVAS TOP BAR (work page) ──────────────────── */
+.bar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.1rem 1.8rem;
+  border-bottom: 1px solid var(--border);
+  transition: border-color var(--t) var(--ease);
+}
+.bar__title {
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+.bar__toggles { display: flex; gap: 0.4rem; }
+.bar__toggle {
+  width: 26px; height: 26px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--dim); border-radius: 3px;
+  transition: color 0.15s ease;
+}
+.bar__toggle:hover  { color: var(--fg); }
+.bar__toggle.is-on  { color: var(--fg); }
+
+/* ── STAGE (slideshow) ───────────────────────────── */
+.stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.8rem 2.4rem 1.2rem;
+  position: relative;
+  overflow: hidden;
+  transition: opacity 0.2s ease;
+}
+.stage.is-off { display: none; }
+
+.stage__frame {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 520px;
+}
+.stage__img {
+  max-height: calc(100vh - var(--strip-h) - 9rem);
+  max-width: 100%;
+  width: auto; height: auto;
+  object-fit: contain;
+  will-change: transform, opacity;
+}
+
+/* arrow buttons flanking the photo */
+.stage__arrows {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: none;
+  padding: 0 -1.5rem;
+}
+.stage__arr {
+  pointer-events: all;
+  width: 34px; height: 34px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--dim); font-size: 0.9rem;
+  transition: color 0.15s ease, transform 0.15s ease;
+  border-radius: 50%;
+}
+.stage__arr:hover { color: var(--fg); }
+.stage__arr--l:hover { transform: translateX(-2px); }
+.stage__arr--r:hover { transform: translateX( 2px); }
+
+.stage__meta {
+  margin-top: 1rem;
+  width: 100%; max-width: 520px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.stage__cap  { font-size: 0.68rem; letter-spacing: 0.02em; color: var(--dim); }
+.stage__idx  { font-size: 0.6rem;  letter-spacing: 0.08em; color: var(--dim); font-variant-numeric: tabular-nums; }
+
+/* ── FILMSTRIP ───────────────────────────────────── */
+.strip {
+  flex-shrink: 0;
+  height: var(--strip-h);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0 1.8rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  transition: border-color var(--t) var(--ease);
+}
+.strip::-webkit-scrollbar { display: none; }
+.strip.is-off { display: none; }
+
+.strip__th {
+  flex-shrink: 0;
+  height: 52px; width: auto;
+  object-fit: cover;
+  opacity: 0.35;
+  cursor: pointer;
+  transition: opacity 0.18s ease;
+  outline: 1.5px solid transparent;
+  outline-offset: 2px;
+}
+.strip__th:hover      { opacity: 0.65; }
+.strip__th.is-active  { opacity: 1; outline-color: var(--fg); }
+
+/* ── GALLERY (parallax columns) ──────────────────── */
+.gallery {
+  flex: 1;
+  overflow-y: auto;
+  display: none;
+  cursor: grab;
+  scrollbar-width: none;
+}
+.gallery::-webkit-scrollbar { display: none; }
+.gallery:active { cursor: grabbing; }
+.gallery.is-on  { display: flex; gap: 28px; padding: 2rem 2.4rem 2rem; }
+
+.gallery__col {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  will-change: transform;
+}
+.gallery__col:nth-child(1) { flex: 0.72; }
+.gallery__col:nth-child(2) { flex: 1; }
+.gallery__col:nth-child(3) { flex: 0.72; }
+
+.gallery__item {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  flex-shrink: 0;
+  border-radius: 2px;
+}
+.gallery__item-img {
+  width: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.65s cubic-bezier(0.4,0,0.2,1);
+}
+.gallery__col:nth-child(1) .gallery__item-img { aspect-ratio: 3 / 4; }
+.gallery__col:nth-child(2) .gallery__item-img { aspect-ratio: 4 / 5; }
+.gallery__col:nth-child(3) .gallery__item-img { aspect-ratio: 2 / 3; }
+.gallery__item:hover .gallery__item-img { transform: scale(1.06); }
+.gallery__item-cap {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 0.7rem 0.75rem 0.6rem;
+  background: linear-gradient(to top, rgba(0,0,0,0.78) 0%, transparent 100%);
+  transform: translateY(100%);
+  transition: transform 0.32s cubic-bezier(0.4,0,0.2,1);
+}
+.gallery__item:hover .gallery__item-cap { transform: translateY(0); }
+.gallery__item-txt {
+  font-size: 0.62rem;
+  letter-spacing: 0.02em;
+  color: rgba(240,238,234,0.9);
+}
+
+/* ── BIO (about) ─────────────────────────────────── */
+.bio {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  height: 100%;
+}
+.bio__copy {
+  padding: 3.8rem 3rem 2.5rem 2.4rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow-y: auto;
+}
+.bio__eyebrow {
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 1.5rem;
+}
+.bio__name {
+  font-size: clamp(1.8rem, 3.8vw, 3.1rem);
+  font-weight: 300;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  margin-bottom: 2rem;
+}
+.bio__body {
+  font-size: 0.8rem;
+  font-weight: 300;
+  line-height: 1.9;
+  color: var(--dim);
+  max-width: 320px;
+  margin-bottom: 2.4rem;
+}
+.bio__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+.bio__chip {
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: 1px solid var(--border);
+  padding: 0.28rem 0.65rem;
+  color: var(--dim);
+  transition: border-color 0.15s ease, color 0.15s ease;
+  cursor: default;
+}
+.bio__chip:hover { border-color: var(--fg); color: var(--fg); }
+
+.bio__photo-col {
+  position: relative;
+  border-left: 1px solid var(--border);
+  transition: border-color var(--t) var(--ease);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3.5rem 3rem;
+}
+.bio__photo {
+  width: auto;
+  height: auto;
+  max-width: 62%;
+  max-height: 68vh;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+}
+.bio__photo-note {
+  position: absolute;
+  bottom: 1.2rem; left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.52rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--dim);
+  white-space: nowrap;
+}
+
+/* ── INQUIRY (contact) ───────────────────────────── */
+.inquiry {
+  display: grid;
+  grid-template-columns: 1fr 1.35fr;
+  height: 100%;
+}
+.inquiry__info {
+  padding: 3.8rem 2.4rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  transition: border-color var(--t) var(--ease);
+}
+.inquiry__eyebrow {
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 1.5rem;
+}
+.inquiry__head {
+  font-size: clamp(1.8rem, 3.5vw, 3rem);
+  font-weight: 300;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  margin-bottom: 1.8rem;
+}
+.inquiry__blurb {
+  font-size: 0.78rem;
+  font-weight: 300;
+  line-height: 1.8;
+  color: var(--dim);
+  margin-bottom: 2.2rem;
+}
+.inquiry__socials { display: flex; flex-direction: column; gap: 0.32rem; }
+.inquiry__soc {
+  font-size: 0.62rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--dim);
+  display: flex; align-items: center; gap: 0.38rem;
+  transition: color 0.15s ease;
+}
+.inquiry__soc::before { content: '↗'; transition: transform 0.15s ease; }
+.inquiry__soc:hover { color: var(--fg); }
+.inquiry__soc:hover::before { transform: translate(1px,-1px); }
+
+.inquiry__form-wrap {
+  padding: 3.8rem 2.8rem 2.5rem 2.8rem;
+  display: flex;
+  align-items: center;
+  overflow-y: auto;
+}
+/* ── FORM ────────────────────────────────────────── */
+.form { width: 100%; max-width: 360px; }
+.form__duo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.4rem;
+}
+.form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.38rem;
+  margin-bottom: 1.4rem;
+}
+.form__lbl {
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+.form__in {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  padding: 0.48rem 0;
+  font-family: inherit;
+  font-size: 0.76rem;
+  color: var(--fg);
+  outline: none;
+  width: 100%;
+  transition: border-color 0.15s ease;
+  user-select: text; -webkit-user-select: text;
+}
+.form__in::placeholder { color: var(--dim); font-size: 0.75rem; }
+.form__in:focus { border-color: var(--fg); }
+textarea.form__in { resize: none; height: 78px; }
+.form__send {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.62rem 1.35rem;
+  border: 1px solid var(--fg);
+  font-size: 0.6rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--fg);
+  opacity: 0.58;
+  transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
+  font-family: inherit;
+  cursor: pointer;
+  margin-top: 0.4rem;
+  background: none;
+}
+.form__send:hover { opacity: 1; background: var(--fg); color: var(--bg); }
+
+/* ── LIGHTBOX ────────────────────────────────────── */
+.lb {
+  position: fixed; inset: 0; z-index: 400;
+  background: rgba(0,0,0,0.92);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.24s ease;
+}
+.lb.is-on { opacity: 1; pointer-events: all; }
+.lb__img {
+  max-width: 86vw; max-height: 86vh;
+  object-fit: contain;
+  transform: scale(0.96);
+  transition: transform 0.3s var(--ease);
+}
+.lb.is-on .lb__img { transform: scale(1); }
+.lb__close {
+  position: absolute; top: 1.3rem; right: 1.5rem;
+  font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(235,235,235,0.4);
+  transition: color 0.15s ease;
+}
+.lb__close:hover { color: rgba(235,235,235,0.9); }
+.lb__cap {
+  position: absolute; bottom: 1.2rem; left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.62rem; letter-spacing: 0.04em;
+  color: rgba(235,235,235,0.35);
+  white-space: nowrap;
+}
+.lb__side {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 1.4rem; pointer-events: none;
+}
+.lb__arr {
+  pointer-events: all;
+  color: rgba(235,235,235,0.28);
+  font-size: 1.1rem;
+  transition: color 0.15s ease;
+}
+.lb__arr:hover { color: rgba(235,235,235,0.85); }
+
+/* ── BREAKPOINT 860px ────────────────────────────── */
+@media (max-width: 860px) {
+  .layout         { flex-direction: column; }
+  .sidebar {
+    width: 100%; height: auto; flex-direction: row; align-items: center;
+    padding: 0.75rem 1.2rem; border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar__logo  { margin-bottom: 0; margin-right: auto; }
+  .sidebar__logo img { height: 58px; }
+  .sidebar__nav   { flex-direction: row; gap: 1.4rem; flex: none; }
+  .sidebar__btn   { padding: 0.25rem 0; font-size: 0.68rem; }
+  .sidebar__btn::before {
+    left: 0; top: auto; bottom: -3px; transform: none;
+    width: 0; height: 1.5px;
+    transition: width 0.2s ease;
+  }
+  .sidebar__btn:hover::before         { height: 1.5px; width: 100%; }
+  .sidebar__btn.is-active::before     { height: 1.5px; width: 100%; }
+  .sidebar__num   { display: none; }
+  .sidebar__foot  { display: none; }
+  .bio            { grid-template-columns: 1fr; }
+  .bio__photo-col { display: none; }
+  .bio__copy      { padding: 2.4rem 1.5rem; justify-content: flex-start; }
+  .inquiry        { grid-template-columns: 1fr; overflow-y: auto; }
+  .inquiry__info  { border-right: none; border-bottom: 1px solid var(--border);
+                    padding: 2rem 1.5rem; justify-content: flex-start; }
+  .inquiry__form-wrap { padding: 2rem 1.5rem; align-items: flex-start; }
+  .gallery__col:last-child { display: none; }
+}
+
+/* ── BREAKPOINT 480px ────────────────────────────── */
+@media (max-width: 480px) {
+  .sidebar__nav   { gap: 0.9rem; }
+  .bar            { padding: 0.85rem 1.1rem; }
+  .stage          { padding: 1.2rem 1.1rem 0.8rem; }
+  .strip          { padding: 0 1.1rem; }
+  .gallery__col:last-child { display: none; }
+  .form__duo      { grid-template-columns: 1fr; gap: 0; }
+}
+
+  </style>
+</head>
+
+<body>
+<div class="layout">
+
+  <!-- ════════════════════════════════════════
+       SIDEBAR
+  ════════════════════════════════════════ -->
+  <aside class="sidebar">
+    <a class="sidebar__logo" data-page="work" href="#">
+      <img src="Brand assets /4CDC3E50-A3B7-4947-9A3B-B3622FEFB2E6.PNG"
+           alt="Xiomara Delilah Hussein">
+    </a>
+
+    <nav class="sidebar__nav">
+      <button class="sidebar__btn is-active" data-page="work">
+        <span class="sidebar__num">01</span>Work
+      </button>
+      <button class="sidebar__btn" data-page="about">
+        <span class="sidebar__num">02</span>About
+      </button>
+      <button class="sidebar__btn" data-page="contact">
+        <span class="sidebar__num">03</span>Contact
+      </button>
+    </nav>
+
+    <div class="sidebar__foot">
+      <span class="sidebar__clock" id="clock">MO — 12:00 PM</span>
+    </div>
+  </aside>
+
+  <!-- ════════════════════════════════════════
+       CANVAS
+  ════════════════════════════════════════ -->
+  <main class="canvas">
+
+    <!-- ── WORK ─────────────────────────────── -->
+    <section class="page is-on" id="pg-work" data-pid="work">
+
+      <div class="bar">
+        <span class="bar__title">Xiomara Delilah Hussein</span>
+        <div class="bar__toggles">
+          <button class="bar__toggle is-on" id="vt-stage" title="Slideshow">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+              <rect x="1" y="1" width="11" height="11" stroke="currentColor" stroke-width="1.2"/>
+            </svg>
+          </button>
+          <button class="bar__toggle" id="vt-gallery" title="Grid">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+              <rect x="1" y="1" width="4.5" height="4.5" stroke="currentColor" stroke-width="1.2"/>
+              <rect x="7.5" y="1" width="4.5" height="4.5" stroke="currentColor" stroke-width="1.2"/>
+              <rect x="1" y="7.5" width="4.5" height="4.5" stroke="currentColor" stroke-width="1.2"/>
+              <rect x="7.5" y="7.5" width="4.5" height="4.5" stroke="currentColor" stroke-width="1.2"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Slideshow stage -->
+      <div class="stage" id="stage">
+        <div class="stage__frame">
+          <img class="stage__img" id="stage-img" src="" alt="">
+          <div class="stage__arrows">
+            <button class="stage__arr stage__arr--l" id="s-prev">←</button>
+            <button class="stage__arr stage__arr--r" id="s-next">→</button>
+          </div>
+        </div>
+        <div class="stage__meta">
+          <span class="stage__cap" id="stage-cap"></span>
+          <span class="stage__idx" id="stage-idx">01 / 08</span>
+        </div>
+      </div>
+
+      <!-- Filmstrip -->
+      <div class="strip" id="strip"></div>
+
+      <!-- Gallery grid -->
+      <div class="gallery" id="gallery"></div>
+
+    </section>
+
+
+    <!-- ── ABOUT ─────────────────────────────── -->
+    <section class="page" id="pg-about" data-pid="about">
+      <div class="bio">
+        <div class="bio__copy">
+          <p class="bio__eyebrow">About</p>
+          <h1 class="bio__name">Xiomara<br>Delilah<br>Hussein</h1>
+          <p class="bio__body">
+            Independent photographer working across editorial, portrait, and
+            documentary genres. Her work explores the tension between presence
+            and absence — what's captured and what remains unseen.
+          </p>
+          <p class="bio__body">
+            Based between cities, her images have appeared in publications and
+            exhibitions across North America and Europe.
+          </p>
+          <div class="bio__chips">
+            <span class="bio__chip">Editorial</span>
+            <span class="bio__chip">Portrait</span>
+            <span class="bio__chip">Documentary</span>
+            <span class="bio__chip">Available for commissions</span>
+          </div>
+        </div>
+        <div class="bio__photo-col">
+          <!-- Replace src with your portrait -->
+          <img class="bio__photo" id="about-portrait"
+               src="https://placehold.co/700x900/e2ddd7/b8b3ae?text=Add+Portrait"
+               alt="Xiomara Delilah Hussein">
+          <span class="bio__photo-note">© 2026 — All Rights Reserved</span>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ── CONTACT ───────────────────────────── -->
+    <section class="page" id="pg-contact" data-pid="contact">
+      <div class="inquiry">
+        <div class="inquiry__info">
+          <p class="inquiry__eyebrow">Contact</p>
+          <h2 class="inquiry__head">Let's<br>work<br>together</h2>
+          <p class="inquiry__blurb">
+            Available for editorial shoots, portrait sessions,
+            documentary projects, and brand collaborations.
+            Response within 48 hours.
+          </p>
+          <div class="inquiry__socials">
+            <a class="inquiry__soc" href="#">Instagram</a>
+            <a class="inquiry__soc" href="#">VSCO</a>
+            <a class="inquiry__soc" href="#">Behance</a>
+          </div>
+        </div>
+
+        <div class="inquiry__form-wrap">
+          <form class="form" onsubmit="return false;">
+            <div class="form__duo">
+              <div class="form__field">
+                <label class="form__lbl">Name</label>
+                <input class="form__in" type="text" placeholder="Your name" autocomplete="off">
+              </div>
+              <div class="form__field">
+                <label class="form__lbl">Email</label>
+                <input class="form__in" type="email" placeholder="your@email.com" autocomplete="off">
+              </div>
+            </div>
+            <div class="form__field">
+              <label class="form__lbl">Project type</label>
+              <input class="form__in" type="text" placeholder="Editorial, portrait, other…" autocomplete="off">
+            </div>
+            <div class="form__field">
+              <label class="form__lbl">Message</label>
+              <textarea class="form__in" placeholder="Tell me about your project…"></textarea>
+            </div>
+            <button class="form__send" type="submit">Send message →</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div><!-- /.layout -->
+
+
+<!-- ════════════════════════════════════════
+     LIGHTBOX
+════════════════════════════════════════ -->
+<div class="lb" id="lb">
+  <button class="lb__close" id="lb-close">Close ✕</button>
+  <div class="lb__side">
+    <button class="lb__arr" id="lb-prev">←</button>
+    <button class="lb__arr" id="lb-next">→</button>
+  </div>
+  <img class="lb__img" id="lb-img" src="" alt="">
+  <span class="lb__cap" id="lb-cap"></span>
+</div>
+
+
+<script>
+'use strict';
+
+/* ── DATA ──────────────────────────────────────── */
+const PHOTOS = [
+  { src:'https://placehold.co/520x660/e2ddd7/a09890', caption:'Editorial — New York, 2025' },
+  { src:'https://placehold.co/720x500/d8d4cd/a09890', caption:'Portrait Session — Los Angeles, 2025' },
+  { src:'https://placehold.co/500x700/ded9d2/a09890', caption:'Quiet Hours — Puerto Rico, 2024' },
+  { src:'https://placehold.co/660x660/d4d0ca/a09890', caption:'Between Stillness — Miami, 2024' },
+  { src:'https://placehold.co/540x720/e8e4de/a09890', caption:'Unwritten Borders — London, 2024' },
+  { src:'https://placehold.co/750x480/ccc8c2/a09890', caption:'Residue — Paris, 2023' },
+  { src:'https://placehold.co/560x760/dbd6d0/a09890', caption:'Bloom & Fracture — Mexico City, 2023' },
+  { src:'https://placehold.co/700x520/d0ccc6/a09890', caption:'The Weight of Light — Lagos, 2023' },
+];
+
+/* ── STATE ─────────────────────────────────────── */
+const S = { page:'work', mode:'stage', idx:0 };
+
+/* ── REFS ──────────────────────────────────────── */
+const el = id => document.getElementById(id);
+const all = sel => document.querySelectorAll(sel);
+
+const eStageImg  = el('stage-img');
+const eStageCap  = el('stage-cap');
+const eStageIdx  = el('stage-idx');
+const eStage     = el('stage');
+const eStrip     = el('strip');
+const eGallery   = el('gallery');
+const eLb        = el('lb');
+const eLbImg     = el('lb-img');
+const eLbCap     = el('lb-cap');
+
+/* ── NAVIGATE ──────────────────────────────────── */
+function go(page) {
+  S.page = page;
+  all('.page').forEach(p =>
+    p.classList.toggle('is-on', p.dataset.pid === page));
+  all('.sidebar__btn').forEach(b =>
+    b.classList.toggle('is-active', b.dataset.page === page));
+}
+
+all('.sidebar__btn').forEach(b =>
+  b.addEventListener('click', () => go(b.dataset.page)));
+document.querySelector('.sidebar__logo')
+  .addEventListener('click', e => { e.preventDefault(); go('work'); });
+
+/* ── WORK MODE ─────────────────────────────────── */
+function setMode(mode) {
+  S.mode = mode;
+  const isStage = mode === 'stage';
+  eStage.classList.toggle('is-off', !isStage);
+  eStrip.classList.toggle('is-off', !isStage);
+  el('vt-stage').classList.toggle('is-on', isStage);
+  el('vt-gallery').classList.toggle('is-on', !isStage);
+  if (!isStage) { eGallery.classList.add('is-on'); buildGallery(); }
+  else          { eGallery.classList.remove('is-on'); }
+}
+
+el('vt-stage').addEventListener('click',   () => setMode('stage'));
+el('vt-gallery').addEventListener('click', () => setMode('gallery'));
+
+/* ── SLIDESHOW ─────────────────────────────────── */
+let transitioning = false;
+
+function syncMeta() {
+  const p = PHOTOS[S.idx];
+  eStageCap.textContent = p.caption;
+  eStageIdx.textContent =
+    String(S.idx + 1).padStart(2,'0') + ' / ' +
+    String(PHOTOS.length).padStart(2,'0');
+  all('.strip__th').forEach((t, ti) =>
+    t.classList.toggle('is-active', ti === S.idx));
+  const active = eStrip.querySelectorAll('.strip__th')[S.idx];
+  if (active) active.scrollIntoView({ behavior:'smooth', block:'nearest', inline:'center' });
+}
+
+function initSlide() {
+  eStageImg.src = PHOTOS[0].src;
+  eStageImg.alt = PHOTOS[0].caption;
+  S.idx = 0;
+  syncMeta();
+}
+
+function goTo(i, dir) {
+  const next = ((i % PHOTOS.length) + PHOTOS.length) % PHOTOS.length;
+  if (next === S.idx || transitioning) return;
+  transitioning = true;
+
+  const img = eStageImg;
+  const out = dir > 0 ? '-40px' : '40px';
+  const inn = dir > 0 ?  '40px' : '-40px';
+
+  // Phase 1 — exit: slide + fade out
+  img.style.transition = 'opacity 0.22s ease, transform 0.26s cubic-bezier(0.4,0,1,1)';
+  img.style.opacity    = '0';
+  img.style.transform  = `translateX(${out})`;
+
+  setTimeout(() => {
+    // Swap content
+    S.idx   = next;
+    img.src = PHOTOS[next].src;
+    img.alt = PHOTOS[next].caption;
+    syncMeta();
+
+    // Snap to entry side with no transition
+    img.style.transition = 'none';
+    img.style.transform  = `translateX(${inn})`;
+    img.style.opacity    = '0';
+
+    // Phase 2 — enter: slide + fade in (double rAF flushes the snap)
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        img.style.transition = 'opacity 0.34s ease, transform 0.4s cubic-bezier(0,0,0.2,1)';
+        img.style.opacity    = '1';
+        img.style.transform  = 'translateX(0)';
+        setTimeout(() => { transitioning = false; }, 420);
+      });
+    });
+  }, 240);
+}
+
+el('s-prev').addEventListener('click', () => goTo(S.idx - 1, -1));
+el('s-next').addEventListener('click', () => goTo(S.idx + 1,  1));
+document.addEventListener('keydown', e => {
+  if (eLb.classList.contains('is-on')) return;
+  if (e.key === 'ArrowLeft')  goTo(S.idx - 1, -1);
+  if (e.key === 'ArrowRight') goTo(S.idx + 1,  1);
+});
+
+/* ── SWIPE / TRACKPAD GESTURE ──────────────────── */
+// Horizontal trackpad scroll (deltaX) → navigate
+let wheelAccum = 0, wheelTimer = null;
+eStage.addEventListener('wheel', e => {
+  if (S.mode !== 'stage') return;
+  // only act on dominant horizontal movement
+  if (Math.abs(e.deltaX) < Math.abs(e.deltaY)) return;
+  e.preventDefault();
+  wheelAccum += e.deltaX;
+  clearTimeout(wheelTimer);
+  wheelTimer = setTimeout(() => { wheelAccum = 0; }, 300);
+  if (wheelAccum >  60) { wheelAccum = 0; goTo(S.idx + 1,  1); }
+  if (wheelAccum < -60) { wheelAccum = 0; goTo(S.idx - 1, -1); }
+}, { passive: false });
+
+// Touch swipe (mobile / trackpad tap-drag)
+let touchX0 = null;
+eStage.addEventListener('touchstart', e => {
+  touchX0 = e.touches[0].clientX;
+}, { passive: true });
+eStage.addEventListener('touchend', e => {
+  if (touchX0 === null) return;
+  const dx = e.changedTouches[0].clientX - touchX0;
+  touchX0 = null;
+  if (Math.abs(dx) < 40) return;
+  goTo(dx < 0 ? S.idx + 1 : S.idx - 1, dx < 0 ? 1 : -1);
+}, { passive: true });
+
+/* ── FILMSTRIP ─────────────────────────────────── */
+(function buildStrip() {
+  PHOTOS.forEach((p, i) => {
+    const img = document.createElement('img');
+    img.className = 'strip__th';
+    img.src = p.src; img.alt = p.caption; img.loading = 'lazy';
+    img.addEventListener('click', () => goTo(i, i > S.idx ? 1 : -1));
+    protect(img);
+    eStrip.appendChild(img);
+  });
+})();
+
+/* ── GALLERY (parallax) ────────────────────────── */
+function buildGallery() {
+  if (eGallery.dataset.ready) return;
+  eGallery.dataset.ready = '1';
+
+  // Col 0: neutral speed. Col 1: drifts slower. Col 2: drifts faster.
+  const INIT_Y    = [0, 72, 36];   // staggered starting offset (px)
+  const PARALLAX  = [0, 0.16, -0.13]; // extra translateY per scrollTop px
+
+  const buckets = [[], [], []];
+  PHOTOS.forEach((p, i) => buckets[i % 3].push({ ...p, gi: i }));
+
+  const colEls = buckets.map((bucket, ci) => {
+    const col = document.createElement('div');
+    col.className = 'gallery__col';
+    col.style.transform = `translateY(${INIT_Y[ci]}px)`;
+
+    bucket.forEach(({ src, caption, gi }) => {
+      const item = document.createElement('div');
+      item.className = 'gallery__item';
+      const img = document.createElement('img');
+      img.className = 'gallery__item-img';
+      img.src = src; img.alt = caption; img.loading = 'lazy';
+      img.addEventListener('click', () => openLb(gi));
+      protect(img);
+      const cap = document.createElement('div');
+      cap.className = 'gallery__item-cap';
+      cap.innerHTML = `<span class="gallery__item-txt">${caption}</span>`;
+      item.append(img, cap);
+      col.appendChild(item);
+    });
+
+    eGallery.appendChild(col);
+    return col;
+  });
+
+  lenis(eGallery);
+
+  // Apply per-column parallax drift as the container scrolls
+  eGallery.addEventListener('scroll', () => {
+    const sp = eGallery.scrollTop;
+    colEls.forEach((col, ci) => {
+      col.style.transform = `translateY(${INIT_Y[ci] + sp * PARALLAX[ci]}px)`;
+    });
+  });
+}
+
+/* ── LIGHTBOX ──────────────────────────────────── */
+function openLb(i) {
+  S.idx = i;
+  const p = PHOTOS[i];
+  eLbImg.src = p.src; eLbImg.alt = p.caption;
+  eLbCap.textContent = p.caption;
+  eLb.classList.add('is-on');
+}
+function closeLb() { eLb.classList.remove('is-on'); }
+
+el('lb-close').addEventListener('click', closeLb);
+el('lb-prev').addEventListener('click', () => openLb((S.idx - 1 + PHOTOS.length) % PHOTOS.length));
+el('lb-next').addEventListener('click', () => openLb((S.idx + 1) % PHOTOS.length));
+eLb.addEventListener('click', e => { if (e.target === eLb) closeLb(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLb(); });
+
+/* ── CLOCK ─────────────────────────────────────── */
+const DAYS = ['SU','MO','TU','WE','TH','FR','SA'];
+function tick() {
+  const n = new Date();
+  let h = n.getHours(), ap = h >= 12 ? 'PM' : 'AM';
+  h = h % 12 || 12;
+  const m = String(n.getMinutes()).padStart(2,'0');
+  el('clock').textContent = `${DAYS[n.getDay()]} — ${h}:${m} ${ap}`;
+}
+tick(); setInterval(tick, 1000);
+
+/* ── IMAGE PROTECTION ──────────────────────────── */
+function protect(img) {
+  img.addEventListener('contextmenu', e => e.preventDefault());
+  img.addEventListener('dragstart',   e => e.preventDefault());
+}
+protect(eStageImg);
+protect(el('about-portrait'));
+
+/* ── LENIS SMOOTH SCROLL ───────────────────────── */
+function lenis(el) {
+  const LERP = 0.08;
+  let cur = 0, tgt = 0, raf = null;
+
+  function clamp(v) {
+    return Math.max(0, Math.min(v, el.scrollHeight - el.clientHeight));
+  }
+  function step() {
+    const d = tgt - cur;
+    if (Math.abs(d) < 0.09) {
+      cur = tgt; el.scrollTop = tgt; raf = null; return;
+    }
+    cur += d * LERP; el.scrollTop = cur;
+    raf = requestAnimationFrame(step);
+  }
+  function to(delta) {
+    tgt = clamp(tgt + delta);
+    if (!raf) { cur = el.scrollTop; raf = requestAnimationFrame(step); }
+  }
+  function stop() { if (raf) { cancelAnimationFrame(raf); raf = null; } }
+
+  el.addEventListener('wheel', e => { e.preventDefault(); to(e.deltaY * 1.1); }, { passive:false });
+
+  let drag = false, y0 = 0, s0 = 0, vy = 0, ly = 0, lt = 0;
+  el.addEventListener('mousedown', e => {
+    stop(); drag = true; y0 = e.clientY; s0 = el.scrollTop;
+    vy = 0; ly = e.clientY; lt = performance.now();
+    cur = tgt = el.scrollTop; el.style.cursor = 'grabbing';
+  });
+  document.addEventListener('mousemove', e => {
+    if (!drag) return;
+    const now = performance.now();
+    vy = (ly - e.clientY) / Math.max(1, now - lt) * 16;
+    ly = e.clientY; lt = now;
+    cur = tgt = clamp(s0 + (y0 - e.clientY));
+    el.scrollTop = cur;
+  });
+  document.addEventListener('mouseup', () => {
+    if (!drag) return;
+    drag = false; el.style.cursor = '';
+    to(vy * 18);
+  });
+}
+
+/* ── INIT ──────────────────────────────────────── */
+initSlide();
+go('work');
+</script>
+</body>
+</html>
