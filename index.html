@@ -203,13 +203,14 @@ img    { display:block; max-width:100%; }
 
 .stage__frame {
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
   width: 100%;
   max-width: 520px;
 }
 .stage__img {
+  grid-row: 1;
+  grid-column: 1;
   max-height: calc(100vh - var(--strip-h) - 9rem);
   max-width: 100%;
   width: auto; height: auto;
@@ -644,9 +645,12 @@ textarea.form__in { resize: none; height: 78px; }
   }
   .stage__frame {
     display: block;
+    position: relative;
     max-width: 100%; width: 100%; height: 100%;
   }
   .stage__img {
+    grid-row: unset; grid-column: unset;
+    position: absolute; inset: 0;
     width: 100%; height: 100%;
     max-height: 100%; max-width: 100%;
     object-fit: contain;
@@ -781,7 +785,8 @@ textarea.form__in { resize: none; height: 78px; }
       <!-- Slideshow stage -->
       <div class="stage" id="stage">
         <div class="stage__frame">
-          <img class="stage__img" id="stage-img" src="" alt="">
+          <img class="stage__img" id="stage-img-a" src="" alt="">
+          <img class="stage__img" id="stage-img-b" src="" alt="" style="opacity:0">
           <div class="stage__arrows">
             <button class="stage__arr stage__arr--l" id="s-prev">←</button>
             <button class="stage__arr stage__arr--r" id="s-next">→</button>
@@ -954,7 +959,6 @@ const PHOTOS = [
   { src:'Brand assets /IMG_9753.jpg',   w:1600, h:1067 },
   { src:'Brand assets /IMG_9886.jpg',   w:1600, h:1067 },
   { src:'Brand assets /A87A3335.jpg',   w:3331, h:5178 },
-  { src:'Brand assets /A87A3359.jpg',   w:5472, h:3648 },
 ];
 
 /* shuffle */
@@ -970,7 +974,10 @@ const S = { page:'work', mode:'stage', idx:0 };
 const el = id => document.getElementById(id);
 const all = sel => document.querySelectorAll(sel);
 
-const eStageImg  = el('stage-img');
+const eImgA      = el('stage-img-a');
+const eImgB      = el('stage-img-b');
+let   activeImg  = eImgA;   // currently visible
+let   stagingImg = eImgB;   // hidden, loaded with the next photo
 const eStageCap  = el('stage-cap');
 const eStageIdx  = el('stage-idx');
 const eStage     = el('stage');
@@ -1038,8 +1045,12 @@ function syncMeta() {
 }
 
 function initSlide() {
-  eStageImg.src = PHOTOS[0].src;
-  eStageImg.alt = '';
+  activeImg.src            = PHOTOS[0].src;
+  activeImg.style.opacity  = '1';
+  activeImg.style.transform = 'translateX(0)';
+  activeImg.style.transition = 'none';
+  stagingImg.style.opacity   = '0';
+  stagingImg.style.transition = 'none';
   S.idx = 0;
   syncMeta();
   preloadAround(0);
@@ -1050,43 +1061,49 @@ function goTo(i, dir) {
   if (next === S.idx || transitioning) return;
   transitioning = true;
 
-  const img = eStageImg;
-  const out = dir > 0 ? '-40px' : '40px';
-  const inn = dir > 0 ?  '40px' : '-40px';
+  const outX = dir > 0 ? '-48px' : '48px';
+  const inX  = dir > 0 ?  '48px' : '-48px';
 
-  // Phase 1 — exit
-  img.style.transition = 'opacity 0.2s ease, transform 0.24s cubic-bezier(0.4,0,1,1)';
-  img.style.opacity    = '0';
-  img.style.transform  = `translateX(${out})`;
+  // Position staging image off-screen and load the next photo into it
+  stagingImg.src              = PHOTOS[next].src;
+  stagingImg.style.transition = 'none';
+  stagingImg.style.opacity    = '0';
+  stagingImg.style.transform  = `translateX(${inX})`;
 
-  setTimeout(() => {
-    S.idx   = next;
-    img.src = PHOTOS[next].src;
-    img.alt = '';
-    syncMeta();
+  S.idx = next;
+  syncMeta();
 
-    // Snap to entry side, force a synchronous reflow so the
-    // snap is committed before we re-enable transitions
-    img.style.transition = 'none';
-    img.style.transform  = `translateX(${inn})`;
-    img.style.opacity    = '0';
-    void img.getBoundingClientRect();
+  const animate = () => {
+    // Force layout so the staging position is committed before transitions start
+    void stagingImg.getBoundingClientRect();
 
-    const enter = () => {
-      img.style.transition = 'opacity 0.32s ease, transform 0.38s cubic-bezier(0,0,0.2,1)';
-      img.style.opacity    = '1';
-      img.style.transform  = 'translateX(0)';
-      setTimeout(() => { transitioning = false; preloadAround(S.idx); }, 400);
-    };
+    // Exit the current image
+    activeImg.style.transition = 'opacity 0.2s ease, transform 0.24s cubic-bezier(0.4,0,1,1)';
+    activeImg.style.opacity    = '0';
+    activeImg.style.transform  = `translateX(${outX})`;
 
-    // Wait for the new image to be fully decoded before sliding in —
-    // prevents a blank-frame flash on large photos
-    if (img.decode) {
-      img.decode().then(enter).catch(enter);
-    } else {
-      requestAnimationFrame(enter);
-    }
-  }, 220);
+    // Enter the staged image — both animations run simultaneously
+    stagingImg.style.transition = 'opacity 0.32s ease, transform 0.38s cubic-bezier(0,0,0.2,1)';
+    stagingImg.style.opacity    = '1';
+    stagingImg.style.transform  = 'translateX(0)';
+
+    setTimeout(() => {
+      // Swap roles: staging is now active, old active becomes staging
+      [activeImg, stagingImg] = [stagingImg, activeImg];
+      stagingImg.style.transition = 'none';
+      stagingImg.style.opacity    = '0';
+      transitioning = false;
+      preloadAround(S.idx);
+    }, 400);
+  };
+
+  // Decode the next image before starting any animation —
+  // the photo is fully pixel-ready before it moves into frame
+  if (stagingImg.decode) {
+    stagingImg.decode().then(animate).catch(animate);
+  } else {
+    requestAnimationFrame(animate);
+  }
 }
 
 el('s-prev').addEventListener('click', () => goTo(S.idx - 1, -1));
@@ -1214,7 +1231,8 @@ function protect(img) {
   img.addEventListener('contextmenu', e => e.preventDefault());
   img.addEventListener('dragstart',   e => e.preventDefault());
 }
-protect(eStageImg);
+protect(eImgA);
+protect(eImgB);
 protect(el('about-portrait'));
 
 /* ── LENIS SMOOTH SCROLL ───────────────────────── */
