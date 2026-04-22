@@ -519,7 +519,18 @@ textarea.form__in { resize: none; height: 78px; }
   margin-top: 0.4rem;
   background: none;
 }
-.form__send:hover { opacity: 1; background: var(--fg); color: var(--bg); }
+.form__send:hover  { opacity: 1; background: var(--fg); color: var(--bg); }
+.form__send:disabled { opacity: 0.3; cursor: default; pointer-events: none; }
+.form__status {
+  font-size: 0.63rem;
+  letter-spacing: 0.04em;
+  line-height: 1.6;
+  margin-top: 0.9rem;
+  color: var(--dim);
+  min-height: 1.2em;
+}
+.form__status--ok  { color: rgba(160,210,160,0.9); }
+.form__status--err { color: rgba(210,140,140,0.9); }
 
 /* ── LIGHTBOX ────────────────────────────────────── */
 .lb {
@@ -843,26 +854,27 @@ textarea.form__in { resize: none; height: 78px; }
         </div>
 
         <div class="inquiry__form-wrap">
-          <form class="form" onsubmit="return false;">
+          <form class="form" id="contact-form">
             <div class="form__duo">
               <div class="form__field">
                 <label class="form__lbl">Name</label>
-                <input class="form__in" type="text" placeholder="Your name" autocomplete="off">
+                <input class="form__in" type="text" name="name" placeholder="Your name" autocomplete="off" required>
               </div>
               <div class="form__field">
                 <label class="form__lbl">Email</label>
-                <input class="form__in" type="email" placeholder="your@email.com" autocomplete="off">
+                <input class="form__in" type="email" name="email" placeholder="your@email.com" autocomplete="off" required>
               </div>
             </div>
             <div class="form__field">
               <label class="form__lbl">Project type</label>
-              <input class="form__in" type="text" placeholder="Editorial, portrait, other…" autocomplete="off">
+              <input class="form__in" type="text" name="project" placeholder="Editorial, portrait, other…" autocomplete="off">
             </div>
             <div class="form__field">
               <label class="form__lbl">Message</label>
-              <textarea class="form__in" placeholder="Tell me about your project…"></textarea>
+              <textarea class="form__in" name="message" placeholder="Tell me about your project…" required></textarea>
             </div>
-            <button class="form__send" type="submit">Send message →</button>
+            <button class="form__send" type="submit" id="form-btn">Send message →</button>
+            <p class="form__status" id="form-status" aria-live="polite"></p>
           </form>
         </div>
       </div>
@@ -1253,6 +1265,47 @@ function lenis(el) {
 /* ── INIT ──────────────────────────────────────── */
 initSlide();
 go('work');
+
+/* ── CONTACT FORM ──────────────────────────────── */
+// Submissions are forwarded to xiomaradelilahhussein@gmail.com via Formspree.
+// First submission triggers a one-time verification email from Formspree —
+// click the link in that email to activate the form endpoint.
+(function () {
+  const form   = document.getElementById('contact-form');
+  const btn    = document.getElementById('form-btn');
+  const status = document.getElementById('form-status');
+  if (!form) return;
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    btn.disabled    = true;
+    btn.textContent = 'Sending…';
+    status.textContent = '';
+    status.className   = 'form__status';
+
+    try {
+      const res = await fetch('https://formspree.io/xiomaradelilahhussein@gmail.com', {
+        method:  'POST',
+        headers: { 'Accept': 'application/json' },
+        body:    new FormData(form),
+      });
+
+      if (res.ok) {
+        form.reset();
+        btn.textContent        = 'Sent ✓';
+        status.textContent     = 'Message received — I\'ll be in touch within 48 hours.';
+        status.classList.add('form__status--ok');
+      } else {
+        throw new Error('server');
+      }
+    } catch (_) {
+      status.textContent  = 'Something went wrong. Please email me directly at xiomaradelilahhussein@gmail.com';
+      status.classList.add('form__status--err');
+      btn.disabled    = false;
+      btn.textContent = 'Send message →';
+    }
+  });
+})();
 </script>
 </body>
 </html>

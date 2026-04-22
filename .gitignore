@@ -1,0 +1,13 @@
+# macOS system files
+.DS_Store
+**/.DS_Store
+
+# Claude Code session data
+.claude/
+CLAUDE*.md
+
+# Local dev server (not part of the website)
+serve.mjs
+
+# Unused / non-portfolio assets
+Brand assets /siemprericc.com_ (1).png
