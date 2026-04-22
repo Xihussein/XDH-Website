@@ -1017,33 +1017,39 @@ function goTo(i, dir) {
   const out = dir > 0 ? '-40px' : '40px';
   const inn = dir > 0 ?  '40px' : '-40px';
 
-  // Phase 1 — exit: slide + fade out
-  img.style.transition = 'opacity 0.22s ease, transform 0.26s cubic-bezier(0.4,0,1,1)';
+  // Phase 1 — exit
+  img.style.transition = 'opacity 0.2s ease, transform 0.24s cubic-bezier(0.4,0,1,1)';
   img.style.opacity    = '0';
   img.style.transform  = `translateX(${out})`;
 
   setTimeout(() => {
-    // Swap content
     S.idx   = next;
     img.src = PHOTOS[next].src;
     img.alt = '';
     syncMeta();
 
-    // Snap to entry side with no transition
+    // Snap to entry side, force a synchronous reflow so the
+    // snap is committed before we re-enable transitions
     img.style.transition = 'none';
     img.style.transform  = `translateX(${inn})`;
     img.style.opacity    = '0';
+    void img.getBoundingClientRect();
 
-    // Phase 2 — enter: slide + fade in (double rAF flushes the snap)
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        img.style.transition = 'opacity 0.34s ease, transform 0.4s cubic-bezier(0,0,0.2,1)';
-        img.style.opacity    = '1';
-        img.style.transform  = 'translateX(0)';
-        setTimeout(() => { transitioning = false; }, 420);
-      });
-    });
-  }, 240);
+    const enter = () => {
+      img.style.transition = 'opacity 0.32s ease, transform 0.38s cubic-bezier(0,0,0.2,1)';
+      img.style.opacity    = '1';
+      img.style.transform  = 'translateX(0)';
+      setTimeout(() => { transitioning = false; }, 400);
+    };
+
+    // Wait for the new image to be fully decoded before sliding in —
+    // prevents a blank-frame flash on large photos
+    if (img.decode) {
+      img.decode().then(enter).catch(enter);
+    } else {
+      requestAnimationFrame(enter);
+    }
+  }, 220);
 }
 
 el('s-prev').addEventListener('click', () => goTo(S.idx - 1, -1));
