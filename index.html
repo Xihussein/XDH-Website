@@ -564,45 +564,141 @@ textarea.form__in { resize: none; height: 78px; }
 }
 .lb__arr:hover { color: rgba(235,235,235,0.85); }
 
+/* ── MOBILE BOTTOM NAV ───────────────────────────── */
+.mobile-nav {
+  display: none;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 300;
+  background: rgba(17,17,17,0.86);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-top: 1px solid var(--border);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  transition: background var(--t) var(--ease), border-color var(--t) var(--ease);
+}
+.mobile-nav__tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px 0 12px;
+  color: rgba(235,235,235,0.28);
+  font-size: 0.49rem;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+.mobile-nav__tab.is-active { color: var(--fg); }
+.mobile-nav__tab svg { display: block; transition: transform 0.15s ease; }
+.mobile-nav__tab:active svg { transform: scale(0.82); }
+.mobile-nav__tab.is-active svg { opacity: 1; }
+
 /* ── BREAKPOINT 860px ────────────────────────────── */
 @media (max-width: 860px) {
-  .layout         { flex-direction: column; }
-  .sidebar {
-    width: 100%; height: auto; flex-direction: row; align-items: center;
-    padding: 0.75rem 1.2rem; border-right: none;
-    border-bottom: 1px solid var(--border);
+  /* Bottom nav on, sidebar off */
+  .mobile-nav { display: flex; }
+  .sidebar    { display: none; }
+
+  /* Canvas: bottom padding so content clears the fixed nav */
+  .canvas { padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)); }
+
+  /* ── Bar: float over stage as a gradient hood ──── */
+  .bar {
+    position: absolute; top: 0; left: 0; right: 0; z-index: 20;
+    background: linear-gradient(to bottom, rgba(17,17,17,0.75) 0%, transparent 100%);
+    border-bottom: none;
+    padding: 0.9rem 1rem;
   }
-  .sidebar__logo  { margin-bottom: 0; margin-right: auto; }
-  .sidebar__logo img { height: 58px; }
-  .sidebar__nav   { flex-direction: row; gap: 1.4rem; flex: none; }
-  .sidebar__btn   { padding: 0.25rem 0; font-size: 0.68rem; }
-  .sidebar__btn::before {
-    left: 0; top: auto; bottom: -3px; transform: none;
-    width: 0; height: 1.5px;
-    transition: width 0.2s ease;
+  .bar__title { display: none; }
+  .bar__toggle {
+    width: 32px; height: 32px;
+    background: rgba(255,255,255,0.07);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border-radius: 7px;
   }
-  .sidebar__btn:hover::before         { height: 1.5px; width: 100%; }
-  .sidebar__btn.is-active::before     { height: 1.5px; width: 100%; }
-  .sidebar__num   { display: none; }
-  .sidebar__foot  { display: none; }
-  .bio            { grid-template-columns: 1fr; }
+
+  /* ── Stage: full-bleed photo viewer ────────────── */
+  .stage {
+    display: block;
+    flex: 1; min-height: 0;
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .stage__frame {
+    display: block;
+    max-width: 100%; width: 100%; height: 100%;
+  }
+  .stage__img {
+    width: 100%; height: 100%;
+    max-height: 100%; max-width: 100%;
+    object-fit: contain;
+    background: var(--bg);
+  }
+  .stage__arrows { display: none; }
+  .stage__meta {
+    position: absolute; bottom: 1.2rem; right: 1rem;
+    left: auto; width: auto; max-width: none; margin: 0;
+    justify-content: flex-end;
+  }
+  .stage__cap { display: none; }
+  .stage__idx {
+    background: rgba(0,0,0,0.52);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 0.3rem 0.78rem;
+    border-radius: 20px;
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
+    color: rgba(235,235,235,0.82);
+  }
+  .strip { display: none !important; }
+
+  /* ── Gallery: 2-col grid, all photos ───────────── */
+  .gallery.is-on {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px; padding: 2px;
+    overflow-y: auto;
+    cursor: default;
+    align-content: start;
+  }
+  .gallery__col { display: contents; will-change: unset; }
+  .gallery__item { border-radius: 0; }
+  .gallery__item-img { height: auto; }
+
+  /* ── Bio ──────────────────────────────────────── */
+  .bio { grid-template-columns: 1fr; }
   .bio__photo-col { display: none; }
-  .bio__copy      { padding: 2.4rem 1.5rem; justify-content: flex-start; }
-  .inquiry        { grid-template-columns: 1fr; overflow-y: auto; }
-  .inquiry__info  { border-right: none; border-bottom: 1px solid var(--border);
-                    padding: 2rem 1.5rem; justify-content: flex-start; }
+  .bio__copy { padding: 2.4rem 1.5rem; justify-content: flex-start; }
+
+  /* ── Contact ──────────────────────────────────── */
+  .inquiry { grid-template-columns: 1fr; overflow-y: auto; }
+  .inquiry__info {
+    border-right: none; border-bottom: 1px solid var(--border);
+    padding: 2rem 1.5rem 1.5rem; justify-content: flex-start;
+  }
   .inquiry__form-wrap { padding: 2rem 1.5rem; align-items: flex-start; }
-  .gallery__col:last-child { display: none; }
+  .form { max-width: 100%; }
+  .form__in { font-size: 16px; }
+  .form__send { width: 100%; justify-content: center; margin-top: 0.6rem; }
 }
 
 /* ── BREAKPOINT 480px ────────────────────────────── */
 @media (max-width: 480px) {
-  .sidebar__nav   { gap: 0.9rem; }
-  .bar            { padding: 0.85rem 1.1rem; }
-  .stage          { padding: 1.2rem 1.1rem 0.8rem; }
-  .strip          { padding: 0 1.1rem; }
-  .gallery__col:last-child { display: none; }
-  .form__duo      { grid-template-columns: 1fr; gap: 0; }
+  .bar { padding: 0.75rem 0.85rem; }
+  .bar__toggle { width: 30px; height: 30px; }
+  .stage__idx { font-size: 0.54rem; padding: 0.26rem 0.65rem; }
+  .gallery.is-on { gap: 1px; padding: 1px; }
+  .bio__copy { padding: 1.8rem 1.2rem; }
+  .inquiry__info { padding: 1.5rem 1.2rem 1.2rem; }
+  .inquiry__form-wrap { padding: 1.5rem 1.2rem; }
+  .form__duo { grid-template-columns: 1fr; gap: 0; }
 }
 
   </style>
@@ -770,6 +866,36 @@ textarea.form__in { resize: none; height: 78px; }
 
 
 <!-- ════════════════════════════════════════
+     MOBILE BOTTOM NAV
+════════════════════════════════════════ -->
+<nav class="mobile-nav" id="mobile-nav">
+  <button class="mobile-nav__tab is-active" data-page="work">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+      <rect x="2" y="2" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.5"/>
+      <rect x="11" y="2" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.5"/>
+      <rect x="2" y="11" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.5"/>
+      <rect x="11" y="11" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.5"/>
+    </svg>
+    <span>Work</span>
+  </button>
+  <button class="mobile-nav__tab" data-page="about">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+      <circle cx="10" cy="7" r="3" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M3 18c0-3.866 3.134-7 7-7s7 3.134 7 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    <span>About</span>
+  </button>
+  <button class="mobile-nav__tab" data-page="contact">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+      <rect x="2" y="5" width="16" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M2 7l8 6 8-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span>Contact</span>
+  </button>
+</nav>
+
+
+<!-- ════════════════════════════════════════
      LIGHTBOX
 ════════════════════════════════════════ -->
 <div class="lb" id="lb">
@@ -838,11 +964,11 @@ function go(page) {
   S.page = page;
   all('.page').forEach(p =>
     p.classList.toggle('is-on', p.dataset.pid === page));
-  all('.sidebar__btn').forEach(b =>
+  all('.sidebar__btn, .mobile-nav__tab').forEach(b =>
     b.classList.toggle('is-active', b.dataset.page === page));
 }
 
-all('.sidebar__btn').forEach(b =>
+all('.sidebar__btn, .mobile-nav__tab').forEach(b =>
   b.addEventListener('click', () => go(b.dataset.page)));
 document.querySelector('.sidebar__logo')
   .addEventListener('click', e => { e.preventDefault(); go('work'); });
