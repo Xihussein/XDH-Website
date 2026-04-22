@@ -991,6 +991,21 @@ el('vt-gallery').addEventListener('click', () => setMode('gallery'));
 /* ── SLIDESHOW ─────────────────────────────────── */
 let transitioning = false;
 
+/* Preload cache — keeps Image objects alive so the browser
+   holds decoded bitmaps and img.decode() resolves instantly */
+const _preloaded = {};
+function preloadAt(i) {
+  const idx = ((i % PHOTOS.length) + PHOTOS.length) % PHOTOS.length;
+  if (_preloaded[idx]) return;
+  const p = new Image();
+  p.src = PHOTOS[idx].src;
+  if (p.decode) p.decode().catch(() => {});
+  _preloaded[idx] = p;
+}
+function preloadAround(center) {
+  for (let d = -2; d <= 2; d++) preloadAt(center + d);
+}
+
 function syncMeta() {
   eStageIdx.textContent =
     String(S.idx + 1).padStart(2,'0') + ' / ' +
@@ -1006,6 +1021,7 @@ function initSlide() {
   eStageImg.alt = '';
   S.idx = 0;
   syncMeta();
+  preloadAround(0);
 }
 
 function goTo(i, dir) {
@@ -1039,7 +1055,7 @@ function goTo(i, dir) {
       img.style.transition = 'opacity 0.32s ease, transform 0.38s cubic-bezier(0,0,0.2,1)';
       img.style.opacity    = '1';
       img.style.transform  = 'translateX(0)';
-      setTimeout(() => { transitioning = false; }, 400);
+      setTimeout(() => { transitioning = false; preloadAround(S.idx); }, 400);
     };
 
     // Wait for the new image to be fully decoded before sliding in —
