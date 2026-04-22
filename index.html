@@ -603,8 +603,9 @@ textarea.form__in { resize: none; height: 78px; }
   .mobile-nav { display: flex; }
   .sidebar    { display: none; }
 
-  /* Canvas: bottom padding so content clears the fixed nav */
-  .canvas { padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)); }
+  /* Pages stop above the fixed nav — padding-bottom on canvas
+     doesn't affect position:absolute children, so offset bottom instead */
+  .page { bottom: calc(60px + env(safe-area-inset-bottom, 0px)); }
 
   /* ── Bar: float over stage as a gradient hood ──── */
   .bar {
@@ -663,14 +664,20 @@ textarea.form__in { resize: none; height: 78px; }
   .gallery.is-on {
     display: grid !important;
     grid-template-columns: 1fr 1fr;
-    gap: 2px; padding: 2px;
+    grid-auto-rows: auto;
+    gap: 2px;
+    padding: 52px 2px 8px; /* top clears the floating bar */
     overflow-y: auto;
-    cursor: default;
+    -webkit-overflow-scrolling: touch;
+    height: 100%;
+    min-height: 0;
+    align-items: start;
     align-content: start;
+    cursor: default;
   }
-  .gallery__col { display: contents; will-change: unset; }
-  .gallery__item { border-radius: 0; }
-  .gallery__item-img { height: auto; }
+  .gallery__col { display: contents; will-change: unset; transform: none !important; }
+  .gallery__item { overflow: visible; border-radius: 0; }
+  .gallery__item-img { width: 100%; height: auto; display: block; }
 
   /* ── Bio ──────────────────────────────────────── */
   .bio { grid-template-columns: 1fr; }
@@ -694,7 +701,7 @@ textarea.form__in { resize: none; height: 78px; }
   .bar { padding: 0.75rem 0.85rem; }
   .bar__toggle { width: 30px; height: 30px; }
   .stage__idx { font-size: 0.54rem; padding: 0.26rem 0.65rem; }
-  .gallery.is-on { gap: 1px; padding: 1px; }
+  .gallery.is-on { gap: 1px; padding-left: 1px; padding-right: 1px; padding-bottom: 1px; }
   .bio__copy { padding: 1.8rem 1.2rem; }
   .inquiry__info { padding: 1.5rem 1.2rem 1.2rem; }
   .inquiry__form-wrap { padding: 1.5rem 1.2rem; }
