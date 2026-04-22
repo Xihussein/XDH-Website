@@ -314,9 +314,7 @@ img    { display:block; max-width:100%; }
   display: block;
   transition: transform 0.65s cubic-bezier(0.4,0,0.2,1);
 }
-.gallery__col:nth-child(1) .gallery__item-img { aspect-ratio: 3 / 4; }
-.gallery__col:nth-child(2) .gallery__item-img { aspect-ratio: 4 / 5; }
-.gallery__col:nth-child(3) .gallery__item-img { aspect-ratio: 2 / 3; }
+.gallery__item-img { height: auto; }
 .gallery__item:hover .gallery__item-img { transform: scale(1.06); }
 .gallery__item-cap {
   position: absolute;
@@ -790,15 +788,34 @@ textarea.form__in { resize: none; height: 78px; }
 
 /* ── DATA ──────────────────────────────────────── */
 const PHOTOS = [
-  { src:'https://placehold.co/520x660/e2ddd7/a09890', caption:'Editorial — New York, 2025' },
-  { src:'https://placehold.co/720x500/d8d4cd/a09890', caption:'Portrait Session — Los Angeles, 2025' },
-  { src:'https://placehold.co/500x700/ded9d2/a09890', caption:'Quiet Hours — Puerto Rico, 2024' },
-  { src:'https://placehold.co/660x660/d4d0ca/a09890', caption:'Between Stillness — Miami, 2024' },
-  { src:'https://placehold.co/540x720/e8e4de/a09890', caption:'Unwritten Borders — London, 2024' },
-  { src:'https://placehold.co/750x480/ccc8c2/a09890', caption:'Residue — Paris, 2023' },
-  { src:'https://placehold.co/560x760/dbd6d0/a09890', caption:'Bloom & Fracture — Mexico City, 2023' },
-  { src:'https://placehold.co/700x520/d0ccc6/a09890', caption:'The Weight of Light — Lagos, 2023' },
+  { src:'Brand assets /A87A0314.jpg',   w:3648, h:5472 },
+  { src:'Brand assets /A87A6459.jpg',   w:3648, h:5472 },
+  { src:'Brand assets /A87A5620.jpg',   w:3648, h:3648 },
+  { src:'Brand assets /A87A0331.jpg',   w:1600, h:1067 },
+  { src:'Brand assets /Gehdert 4.jpg',  w:1148, h:1700 },
+  { src:'Brand assets /Gehdert 5.jpg',  w:1134, h:1700 },
+  { src:'Brand assets /IMG_3257.jpg',   w:4000, h:6000 },
+  { src:'Brand assets /Saugatuck-1411.jpg', w:2272, h:3408 },
+  { src:'Brand assets /468193871_9228001363887909_1117539083187461661_n.jpg', w:2048, h:1274 },
+  { src:'Brand assets /468321966_9228001410554571_2221686710548736445_n.jpg', w:1364, h:2048 },
+  { src:'Brand assets /A87A9847.jpg',   w:3648, h:3457 },
+  { src:'Brand assets /A87A0472.jpg',   w:1067, h:1600 },
+  { src:'Brand assets /lena 3.png',     w:1134, h:1706 },
+  { src:'Brand assets /jamie 1.jpg',    w:1698, h:1704 },
+  { src:'Brand assets /A87A4963.jpg',   w:3648, h:5472 },
+  { src:'Brand assets /A87A5005.jpg',   w:3648, h:5472 },
+  { src:'Brand assets /A87A6240.jpg',   w:3648, h:5472 },
+  { src:'Brand assets /IMG_3452.jpg',   w:3629, h:5444 },
+  { src:'Brand assets /IMG_0505.jpg',   w:1600, h:1067 },
+  { src:'Brand assets /IMG_9753.jpg',   w:1600, h:1067 },
+  { src:'Brand assets /IMG_9886.jpg',   w:1600, h:1067 },
 ];
+
+/* shuffle */
+for (let i = PHOTOS.length - 1; i > 0; i--) {
+  const j = Math.floor(Math.random() * (i + 1));
+  [PHOTOS[i], PHOTOS[j]] = [PHOTOS[j], PHOTOS[i]];
+}
 
 /* ── STATE ─────────────────────────────────────── */
 const S = { page:'work', mode:'stage', idx:0 };
@@ -850,8 +867,6 @@ el('vt-gallery').addEventListener('click', () => setMode('gallery'));
 let transitioning = false;
 
 function syncMeta() {
-  const p = PHOTOS[S.idx];
-  eStageCap.textContent = p.caption;
   eStageIdx.textContent =
     String(S.idx + 1).padStart(2,'0') + ' / ' +
     String(PHOTOS.length).padStart(2,'0');
@@ -863,7 +878,7 @@ function syncMeta() {
 
 function initSlide() {
   eStageImg.src = PHOTOS[0].src;
-  eStageImg.alt = PHOTOS[0].caption;
+  eStageImg.alt = '';
   S.idx = 0;
   syncMeta();
 }
@@ -886,7 +901,7 @@ function goTo(i, dir) {
     // Swap content
     S.idx   = next;
     img.src = PHOTOS[next].src;
-    img.alt = PHOTOS[next].caption;
+    img.alt = '';
     syncMeta();
 
     // Snap to entry side with no transition
@@ -947,7 +962,7 @@ eStage.addEventListener('touchend', e => {
   PHOTOS.forEach((p, i) => {
     const img = document.createElement('img');
     img.className = 'strip__th';
-    img.src = p.src; img.alt = p.caption; img.loading = 'lazy';
+    img.src = p.src; img.alt = ''; img.loading = 'lazy';
     img.addEventListener('click', () => goTo(i, i > S.idx ? 1 : -1));
     protect(img);
     eStrip.appendChild(img);
@@ -964,25 +979,23 @@ function buildGallery() {
   const PARALLAX  = [0, 0.16, -0.13]; // extra translateY per scrollTop px
 
   const buckets = [[], [], []];
-  PHOTOS.forEach((p, i) => buckets[i % 3].push({ ...p, gi: i }));
+  PHOTOS.forEach((p, i) => buckets[i % 3].push({ src: p.src, w: p.w, h: p.h, gi: i }));
 
   const colEls = buckets.map((bucket, ci) => {
     const col = document.createElement('div');
     col.className = 'gallery__col';
     col.style.transform = `translateY(${INIT_Y[ci]}px)`;
 
-    bucket.forEach(({ src, caption, gi }) => {
+    bucket.forEach(({ src, w, h, gi }) => {
       const item = document.createElement('div');
       item.className = 'gallery__item';
       const img = document.createElement('img');
       img.className = 'gallery__item-img';
-      img.src = src; img.alt = caption; img.loading = 'lazy';
+      img.src = src; img.alt = ''; img.loading = 'lazy';
+      img.style.aspectRatio = `${w} / ${h}`;
       img.addEventListener('click', () => openLb(gi));
       protect(img);
-      const cap = document.createElement('div');
-      cap.className = 'gallery__item-cap';
-      cap.innerHTML = `<span class="gallery__item-txt">${caption}</span>`;
-      item.append(img, cap);
+      item.append(img);
       col.appendChild(item);
     });
 
@@ -1005,8 +1018,8 @@ function buildGallery() {
 function openLb(i) {
   S.idx = i;
   const p = PHOTOS[i];
-  eLbImg.src = p.src; eLbImg.alt = p.caption;
-  eLbCap.textContent = p.caption;
+  eLbImg.src = p.src; eLbImg.alt = '';
+  eLbCap.textContent = '';
   eLb.classList.add('is-on');
 }
 function closeLb() { eLb.classList.remove('is-on'); }
