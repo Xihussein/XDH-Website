@@ -533,6 +533,28 @@ textarea.form__in { resize: none; height: 78px; }
 .form__status--ok  { color: rgba(160,210,160,0.9); }
 .form__status--err { color: rgba(210,140,140,0.9); }
 
+/* ── VIDEO ───────────────────────────────────────── */
+.video-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 2rem 2.4rem;
+}
+.video-embed {
+  width: 100%;
+  max-width: 960px;
+  aspect-ratio: 16 / 9;
+  position: relative;
+}
+.video-embed iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
 /* ── LIGHTBOX ────────────────────────────────────── */
 .lb {
   position: fixed; inset: 0; z-index: 400;
@@ -707,6 +729,9 @@ textarea.form__in { resize: none; height: 78px; }
   }
   .inquiry__form-wrap { padding: 2rem 1.5rem; align-items: flex-start; }
   .form { max-width: 100%; }
+
+  /* ── Video ────────────────────────────────────── */
+  .video-page { padding: 1rem; }
   .form__in { font-size: 16px; }
   .form__send { width: 100%; justify-content: center; margin-top: 0.6rem; }
 }
@@ -747,6 +772,9 @@ textarea.form__in { resize: none; height: 78px; }
       </button>
       <button class="sidebar__btn" data-page="contact">
         <span class="sidebar__num">03</span>Contact
+      </button>
+      <button class="sidebar__btn" data-page="video">
+        <span class="sidebar__num">04</span>Video
       </button>
     </nav>
 
@@ -894,6 +922,21 @@ textarea.form__in { resize: none; height: 78px; }
       </div>
     </section>
 
+
+    <!-- ── VIDEO ─────────────────────────────── -->
+    <section class="page" id="pg-video" data-pid="video">
+      <div class="video-page">
+        <div class="video-embed">
+          <iframe
+            src="https://player.vimeo.com/video/1187055145?title=0&byline=0&portrait=0&dnt=1"
+            allow="autoplay; fullscreen; picture-in-picture"
+            allowfullscreen
+            title="Good Person">
+          </iframe>
+        </div>
+      </div>
+    </section>
+
   </main>
 </div><!-- /.layout -->
 
@@ -924,6 +967,13 @@ textarea.form__in { resize: none; height: 78px; }
       <path d="M2 7l8 6 8-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
     <span>Contact</span>
+  </button>
+  <button class="mobile-nav__tab" data-page="video">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+      <rect x="2" y="4" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M14 8l4-2v8l-4-2V8z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+    </svg>
+    <span>Video</span>
   </button>
 </nav>
 
