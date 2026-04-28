@@ -549,13 +549,12 @@ textarea.form__in { resize: none; height: 78px; }
 
 .video-hero {
   flex-shrink: 0;
-  padding: 2rem 2.4rem 1.5rem;
+  padding: 1.2rem 1.2rem 1rem;
   display: flex;
   justify-content: center;
 }
 .video-embed {
   width: 100%;
-  max-width: 960px;
   aspect-ratio: 16 / 9;
   position: relative;
 }
@@ -568,10 +567,8 @@ textarea.form__in { resize: none; height: 78px; }
 }
 
 .video-info {
-  padding: 0 2.4rem 3rem;
-  max-width: 960px;
+  padding: 0 1.2rem 2.4rem;
   width: 100%;
-  margin: 0 auto;
 }
 .video-info__title {
   font-size: clamp(1.4rem, 3vw, 2.2rem);
@@ -601,36 +598,6 @@ textarea.form__in { resize: none; height: 78px; }
   max-width: 540px;
 }
 
-@media (min-width: 861px) {
-  .video-page {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    align-items: start;
-    gap: 0 2rem;
-    padding: 2rem 2.4rem;
-  }
-  .video-section {
-    min-width: 0;
-  }
-  .video-section + .video-section {
-    border-top: none;
-  }
-  .video-section:nth-child(3) {
-    grid-column: 1 / -1;
-    border-top: 1px solid var(--border);
-    padding-top: 2.4rem;
-  }
-  .video-hero {
-    padding: 0 0 1.2rem;
-  }
-  .video-embed {
-    max-width: 100%;
-  }
-  .video-info {
-    padding: 0 0 2rem;
-    max-width: 100%;
-  }
-}
 
 @media (max-width: 860px) {
   .video-hero {
