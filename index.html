@@ -294,57 +294,35 @@ img    { display:block; max-width:100%; }
 .strip__th:hover      { opacity: 0.65; }
 .strip__th.is-active  { opacity: 1; outline-color: var(--fg); }
 
-/* ── GALLERY (parallax columns) ──────────────────── */
+/* ── GALLERY (masonry) ───────────────────────────── */
 .gallery {
   flex: 1;
-  overflow-y: scroll;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   display: none;
-  cursor: grab;
   scrollbar-width: none;
 }
 .gallery::-webkit-scrollbar { display: none; }
-.gallery:active { cursor: grabbing; }
-.gallery.is-on  { display: flex; gap: 28px; padding: 2rem 2.4rem 2rem; }
-
-.gallery__col {
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
-  will-change: transform;
+.gallery.is-on {
+  display: block;
+  column-count: 3;
+  column-gap: 6px;
+  padding: 1.2rem 1.5rem 1.5rem;
 }
-.gallery__col:nth-child(1) { flex: 0.72; }
-.gallery__col:nth-child(2) { flex: 1; }
-.gallery__col:nth-child(3) { flex: 0.72; }
-
 .gallery__item {
-  position: relative;
+  break-inside: avoid;
+  margin-bottom: 6px;
   overflow: hidden;
-  cursor: pointer;
-  flex-shrink: 0;
   border-radius: 2px;
+  cursor: pointer;
 }
 .gallery__item-img {
   width: 100%;
-  object-fit: cover;
+  height: auto;
   display: block;
-  transition: transform 0.65s cubic-bezier(0.4,0,0.2,1);
+  transition: transform 0.55s cubic-bezier(0.4,0,0.2,1);
 }
-.gallery__item-img { height: auto; }
-.gallery__item:hover .gallery__item-img { transform: scale(1.06); }
-.gallery__item-cap {
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  padding: 0.7rem 0.75rem 0.6rem;
-  background: linear-gradient(to top, rgba(0,0,0,0.78) 0%, transparent 100%);
-  transform: translateY(100%);
-  transition: transform 0.32s cubic-bezier(0.4,0,0.2,1);
-}
-.gallery__item:hover .gallery__item-cap { transform: translateY(0); }
-.gallery__item-txt {
-  font-size: 0.62rem;
-  letter-spacing: 0.02em;
-  color: rgba(240,238,234,0.9);
-}
+.gallery__item:hover .gallery__item-img { transform: scale(1.04); }
 
 /* ── BIO (about) ─────────────────────────────────── */
 .bio {
@@ -772,25 +750,19 @@ textarea.form__in { resize: none; height: 78px; }
   }
   .strip { display: none !important; }
 
-  /* ── Gallery: 2-col grid, all photos ───────────── */
+  /* ── Gallery: 2-col masonry, all photos ────────── */
   .gallery.is-on {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr;
-    grid-auto-rows: auto;
-    gap: 2px;
-    padding: 52px 2px 8px; /* top clears the floating bar */
-    overflow-y: scroll;
+    display: block !important;
+    column-count: 2;
+    column-gap: 3px;
+    padding: 52px 3px 8px;
+    overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
     height: 100%;
-    min-height: 0;
-    align-items: start;
-    align-content: start;
     cursor: default;
   }
-  .gallery__col { display: contents; will-change: unset; transform: none !important; }
-  .gallery__item { overflow: visible; border-radius: 0; }
-  .gallery__item-img { width: 100%; height: auto; display: block; }
+  .gallery__item { margin-bottom: 3px; border-radius: 0; }
 
   /* ── Bio ──────────────────────────────────────── */
   .bio { grid-template-columns: 1fr; }
@@ -1335,94 +1307,21 @@ eStage.addEventListener('touchend', e => {
   });
 })();
 
-/* ── GALLERY (parallax + infinite scroll) ──────── */
+/* ── GALLERY (masonry) ─────────────────────────── */
 function buildGallery() {
   if (eGallery.dataset.ready) return;
   eGallery.dataset.ready = '1';
 
-  const mobile = window.matchMedia('(max-width: 860px)').matches;
-  const INIT_Y   = [0, 72, 36];
-  const PARALLAX = [0, 0.16, -0.13];
-
-  // Desktop: triple photos for infinite loop. Mobile: show once, native scroll handles it.
-  const SOURCE = mobile ? PHOTOS : [...PHOTOS, ...PHOTOS, ...PHOTOS];
-  const buckets = [[], [], []];
-  SOURCE.forEach((p, i) => buckets[i % 3].push({ src: p.src, w: p.w, h: p.h, gi: i % PHOTOS.length }));
-
-  const offsets = [...INIT_Y];
-
-  const colEls = buckets.map((bucket, ci) => {
-    const col = document.createElement('div');
-    col.className = 'gallery__col';
-    col.style.transform = `translateY(${INIT_Y[ci]}px)`;
-    bucket.forEach(({ src, w, h, gi }) => {
-      const item = document.createElement('div');
-      item.className = 'gallery__item';
-      const img = document.createElement('img');
-      img.className = 'gallery__item-img';
-      img.src = src; img.alt = ''; img.loading = 'lazy';
-      img.style.aspectRatio = `${w} / ${h}`;
-      img.addEventListener('click', () => openLb(gi));
-      protect(img);
-      item.append(img);
-      col.appendChild(item);
-    });
-    eGallery.appendChild(col);
-    return col;
-  });
-
-  if (mobile) return;
-
-  // Desktop: start in the middle third so both directions feel infinite
-  requestAnimationFrame(() => {
-    eGallery.scrollTop = eGallery.scrollHeight / 3;
-  });
-
-  // Native scroll handles glide/momentum — no lenis interception needed
-  let jumping = false;
-  eGallery.addEventListener('scroll', () => {
-    if (jumping) return;
-    let sp = eGallery.scrollTop;
-    const third = eGallery.scrollHeight / 3;
-
-    if (sp < third * 0.25) {
-      jumping = true;
-      eGallery.scrollTop = sp + third;
-      for (let ci = 0; ci < 3; ci++) offsets[ci] -= third * PARALLAX[ci];
-      sp = eGallery.scrollTop;
-      colEls.forEach((col, ci) =>
-        col.style.transform = `translateY(${offsets[ci] + sp * PARALLAX[ci]}px)`);
-      jumping = false;
-      return;
-    }
-    if (sp > third * 2.75) {
-      jumping = true;
-      eGallery.scrollTop = sp - third;
-      for (let ci = 0; ci < 3; ci++) offsets[ci] += third * PARALLAX[ci];
-      sp = eGallery.scrollTop;
-      colEls.forEach((col, ci) =>
-        col.style.transform = `translateY(${offsets[ci] + sp * PARALLAX[ci]}px)`);
-      jumping = false;
-      return;
-    }
-
-    colEls.forEach((col, ci) =>
-      col.style.transform = `translateY(${offsets[ci] + sp * PARALLAX[ci]}px)`);
-  });
-
-  // Simple drag-to-scroll for mouse users
-  let drag = false, dragY = 0, dragScroll = 0;
-  eGallery.addEventListener('mousedown', e => {
-    drag = true; dragY = e.clientY; dragScroll = eGallery.scrollTop;
-    eGallery.style.cursor = 'grabbing';
-  });
-  document.addEventListener('mousemove', e => {
-    if (!drag) return;
-    eGallery.scrollTop = dragScroll + (dragY - e.clientY);
-  });
-  document.addEventListener('mouseup', () => {
-    if (!drag) return;
-    drag = false; eGallery.style.cursor = '';
+  PHOTOS.forEach((p, i) => {
+    const item = document.createElement('div');
+    item.className = 'gallery__item';
+    const img = document.createElement('img');
+    img.className = 'gallery__item-img';
+    img.src = p.src; img.alt = ''; img.loading = 'lazy';
+    img.addEventListener('click', () => openLb(i));
+    protect(img);
+    item.appendChild(img);
+    eGallery.appendChild(item);
   });
 }
 
@@ -1462,58 +1361,6 @@ protect(eImgA);
 protect(eImgB);
 protect(el('about-portrait'));
 
-/* ── SMOOTH SCROLL ─────────────────────────────── */
-function lenis(container) {
-  const LERP = 0.13;
-  let cur = 0, tgt = 0, raf = null;
-
-  function clamp(v) {
-    return Math.max(0, Math.min(v, container.scrollHeight - container.clientHeight));
-  }
-  function step() {
-    const d = tgt - cur;
-    if (Math.abs(d) < 0.09) {
-      cur = tgt; container.scrollTop = tgt; raf = null; return;
-    }
-    cur += d * LERP; container.scrollTop = cur;
-    raf = requestAnimationFrame(step);
-  }
-  function to(delta) {
-    tgt = clamp(tgt + delta);
-    if (!raf) { cur = container.scrollTop; raf = requestAnimationFrame(step); }
-  }
-  function stop() { if (raf) { cancelAnimationFrame(raf); raf = null; } }
-  function jump(delta) {
-    stop();
-    cur = clamp(cur + delta);
-    tgt = clamp(tgt + delta);
-    container.scrollTop = cur;
-  }
-
-  container.addEventListener('wheel', e => { e.preventDefault(); to(e.deltaY * 3.5); }, { passive:false });
-
-  let drag = false, y0 = 0, s0 = 0, vy = 0, ly = 0, lt = 0;
-  container.addEventListener('mousedown', e => {
-    stop(); drag = true; y0 = e.clientY; s0 = container.scrollTop;
-    vy = 0; ly = e.clientY; lt = performance.now();
-    cur = tgt = container.scrollTop; container.style.cursor = 'grabbing';
-  });
-  document.addEventListener('mousemove', e => {
-    if (!drag) return;
-    const now = performance.now();
-    vy = (ly - e.clientY) / Math.max(1, now - lt) * 16;
-    ly = e.clientY; lt = now;
-    cur = tgt = clamp(s0 + (y0 - e.clientY));
-    container.scrollTop = cur;
-  });
-  document.addEventListener('mouseup', () => {
-    if (!drag) return;
-    drag = false; container.style.cursor = '';
-    to(vy * 20);
-  });
-
-  return { jump };
-}
 
 /* ── INIT ──────────────────────────────────────── */
 initSlide();
