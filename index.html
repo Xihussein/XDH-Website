@@ -1340,15 +1340,15 @@ function buildGallery() {
   if (eGallery.dataset.ready) return;
   eGallery.dataset.ready = '1';
 
+  const mobile = window.matchMedia('(max-width: 860px)').matches;
   const INIT_Y   = [0, 72, 36];
   const PARALLAX = [0, 0.16, -0.13];
 
-  // Triple photos so we can loop seamlessly
-  const INF = [...PHOTOS, ...PHOTOS, ...PHOTOS];
+  // Desktop: triple photos for infinite loop. Mobile: show once, native scroll handles it.
+  const SOURCE = mobile ? PHOTOS : [...PHOTOS, ...PHOTOS, ...PHOTOS];
   const buckets = [[], [], []];
-  INF.forEach((p, i) => buckets[i % 3].push({ src: p.src, w: p.w, h: p.h, gi: i % PHOTOS.length }));
+  SOURCE.forEach((p, i) => buckets[i % 3].push({ src: p.src, w: p.w, h: p.h, gi: i % PHOTOS.length }));
 
-  // offsets track parallax base after each seamless jump
   const offsets = [...INIT_Y];
 
   const colEls = buckets.map((bucket, ci) => {
@@ -1371,7 +1371,10 @@ function buildGallery() {
     return col;
   });
 
-  // Start scrolled into the middle third so both directions feel infinite
+  // Mobile: native scroll, no lenis, no infinite loop
+  if (mobile) return;
+
+  // Desktop: start in the middle third so both directions feel infinite
   requestAnimationFrame(() => {
     eGallery.scrollTop = eGallery.scrollHeight / 3;
   });
