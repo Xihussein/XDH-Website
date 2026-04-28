@@ -297,7 +297,7 @@ img    { display:block; max-width:100%; }
 /* ── GALLERY (parallax columns) ──────────────────── */
 .gallery {
   flex: 1;
-  overflow-y: auto;
+  overflow-y: scroll;
   display: none;
   cursor: grab;
   scrollbar-width: none;
@@ -1371,7 +1371,6 @@ function buildGallery() {
     return col;
   });
 
-  // Mobile: native scroll, no lenis, no infinite loop
   if (mobile) return;
 
   // Desktop: start in the middle third so both directions feel infinite
@@ -1379,8 +1378,7 @@ function buildGallery() {
     eGallery.scrollTop = eGallery.scrollHeight / 3;
   });
 
-  const scroller = lenis(eGallery);
-
+  // Native scroll handles glide/momentum — no lenis interception needed
   let jumping = false;
   eGallery.addEventListener('scroll', () => {
     if (jumping) return;
@@ -1389,7 +1387,7 @@ function buildGallery() {
 
     if (sp < third * 0.25) {
       jumping = true;
-      scroller.jump(third);
+      eGallery.scrollTop = sp + third;
       for (let ci = 0; ci < 3; ci++) offsets[ci] -= third * PARALLAX[ci];
       sp = eGallery.scrollTop;
       colEls.forEach((col, ci) =>
@@ -1399,7 +1397,7 @@ function buildGallery() {
     }
     if (sp > third * 2.75) {
       jumping = true;
-      scroller.jump(-third);
+      eGallery.scrollTop = sp - third;
       for (let ci = 0; ci < 3; ci++) offsets[ci] += third * PARALLAX[ci];
       sp = eGallery.scrollTop;
       colEls.forEach((col, ci) =>
@@ -1410,6 +1408,21 @@ function buildGallery() {
 
     colEls.forEach((col, ci) =>
       col.style.transform = `translateY(${offsets[ci] + sp * PARALLAX[ci]}px)`);
+  });
+
+  // Simple drag-to-scroll for mouse users
+  let drag = false, dragY = 0, dragScroll = 0;
+  eGallery.addEventListener('mousedown', e => {
+    drag = true; dragY = e.clientY; dragScroll = eGallery.scrollTop;
+    eGallery.style.cursor = 'grabbing';
+  });
+  document.addEventListener('mousemove', e => {
+    if (!drag) return;
+    eGallery.scrollTop = dragScroll + (dragY - e.clientY);
+  });
+  document.addEventListener('mouseup', () => {
+    if (!drag) return;
+    drag = false; eGallery.style.cursor = '';
   });
 }
 
