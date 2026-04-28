@@ -304,7 +304,10 @@ img    { display:block; max-width:100%; }
   gap: 16px;
   padding: 16px;
   flex: 1;
-  overflow-y: auto;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  touch-action: pan-y;
   align-content: start;
   scrollbar-width: none;
 }
