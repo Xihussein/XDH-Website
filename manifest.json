@@ -1,0 +1,16 @@
+{
+  "name": "Xiomara Delilah Hussein",
+  "short_name": "Xiomara Delilah Hussein",
+  "icons": [
+    {
+      "src": "Brand assets /4CDC3E50-A3B7-4947-9A3B-B3622FEFB2E6.PNG",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#111111"
+}
