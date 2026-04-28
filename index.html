@@ -295,35 +295,32 @@ img    { display:block; max-width:100%; }
 .strip__th.is-active  { opacity: 1; outline-color: var(--fg); }
 
 /* ── GALLERY ─────────────────────────────────────── */
-.gallery {
-  display: none;
-}
+.gallery { display: none; }
 .gallery.is-on {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  padding: 16px;
+  gap: 24px;
+  padding: 24px;
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  touch-action: pan-y;
   align-content: start;
   scrollbar-width: none;
 }
 .gallery.is-on::-webkit-scrollbar { display: none; }
 .gallery__item {
   cursor: pointer;
-  touch-action: pan-y;
+  border-radius: 2px;
+  overflow: hidden;
 }
 .gallery__item-img {
   width: 100%;
   height: auto;
   display: block;
   pointer-events: none;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.18s ease;
 }
-.gallery__item:hover .gallery__item-img { opacity: 0.75; }
+.gallery__item:hover .gallery__item-img { opacity: 0.72; }
 
 /* ── BIO (about) ─────────────────────────────────── */
 .bio {
@@ -773,8 +770,8 @@ textarea.form__in { resize: none; height: 78px; }
   }
   #pg-work.gallery-mode .gallery.is-on {
     grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    padding: 10px;
+    gap: 16px;
+    padding: 16px;
     position: static;
     overflow: visible;
     height: auto;
@@ -805,7 +802,7 @@ textarea.form__in { resize: none; height: 78px; }
   .bar { padding: 0.75rem 0.85rem; }
   .bar__toggle { width: 30px; height: 30px; }
   .stage__idx { font-size: 0.54rem; padding: 0.26rem 0.65rem; }
-  #pg-work.gallery-mode .gallery.is-on { gap: 1px; padding: 1px; }
+  #pg-work.gallery-mode .gallery.is-on { gap: 12px; padding: 12px; }
   .bio__copy { padding: 1.8rem 1.2rem; }
   .inquiry__info { padding: 1.5rem 1.2rem 1.2rem; }
   .inquiry__form-wrap { padding: 1.5rem 1.2rem; }
@@ -1341,16 +1338,15 @@ function buildGallery() {
     item.appendChild(img);
     eGallery.appendChild(item);
 
-    // Distinguish tap from scroll — only open lightbox if finger barely moved
+    // Only open lightbox on a true tap (finger moved < 15px) — not a scroll
     let touchY = 0;
     item.addEventListener('touchstart', e => {
       touchY = e.touches[0].clientY;
     }, { passive: true });
     item.addEventListener('touchend', e => {
-      if (Math.abs(e.changedTouches[0].clientY - touchY) < 8) openLb(i);
+      if (Math.abs(e.changedTouches[0].clientY - touchY) < 15) openLb(i);
     }, { passive: true });
 
-    // Desktop click
     item.addEventListener('click', () => openLb(i));
   });
 }
