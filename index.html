@@ -385,8 +385,6 @@ img    { display:block; max-width:100%; }
   object-fit: contain;
   object-position: center center;
   display: block;
-  clip-path: inset(0 0 100% 0);
-  transition: clip-path 0.3s ease-out;
 }
 .bio__photo-note {
   position: absolute;
@@ -1381,24 +1379,6 @@ protect(eImgA);
 protect(eImgB);
 protect(el('about-portrait'));
 
-
-/* ── ABOUT PHOTO REVEAL ────────────────────────── */
-(function () {
-  const page  = document.getElementById('pg-about');
-  const photo = page && page.querySelector('.bio__photo');
-  if (!page || !photo) return;
-
-  function update() {
-    const max = page.scrollHeight - page.clientHeight;
-    if (max <= 0) { photo.style.clipPath = 'inset(0 0 0% 0)'; return; }
-    // Finish reveal at 85% scroll so photo is fully visible before bottom
-    const pct    = Math.min(1, page.scrollTop / max / 0.85);
-    const bottom = Math.max(0, 100 - pct * 100);
-    photo.style.clipPath = `inset(0 0 ${bottom}% 0)`;
-  }
-
-  page.addEventListener('scroll', update, { passive: true });
-})();
 
 /* ── INIT ──────────────────────────────────────── */
 initSlide();
