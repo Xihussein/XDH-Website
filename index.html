@@ -554,6 +554,17 @@ textarea.form__in { resize: none; height: 78px; }
   height: 100%;
   border: none;
 }
+@media (max-width: 860px) {
+  .video-page {
+    padding: 0;
+    align-items: stretch;
+  }
+  .video-embed {
+    max-width: 100%;
+    aspect-ratio: unset;
+    height: 100%;
+  }
+}
 
 /* ── LIGHTBOX ────────────────────────────────────── */
 .lb {
@@ -730,8 +741,6 @@ textarea.form__in { resize: none; height: 78px; }
   .inquiry__form-wrap { padding: 2rem 1.5rem; align-items: flex-start; }
   .form { max-width: 100%; }
 
-  /* ── Video ────────────────────────────────────── */
-  .video-page { padding: 1rem; }
   .form__in { font-size: 16px; }
   .form__send { width: 100%; justify-content: center; margin-top: 0.6rem; }
 }
