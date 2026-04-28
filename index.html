@@ -378,13 +378,13 @@ img    { display:block; max-width:100%; }
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 3.5rem 3rem;
+  padding: 2rem;
 }
 .bio__photo {
   width: auto;
   height: auto;
-  max-width: 62%;
-  max-height: 68vh;
+  max-width: 88%;
+  max-height: 82vh;
   object-fit: contain;
   object-position: center;
   display: block;
@@ -759,8 +759,25 @@ textarea.form__in { resize: none; height: 78px; }
   }
 
   /* ── Bio ──────────────────────────────────────── */
-  .bio { grid-template-columns: 1fr; }
-  .bio__photo-col { display: none; }
+  .bio {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+    overflow-y: auto;
+    height: 100%;
+  }
+  .bio__photo-col {
+    order: -1;
+    border-left: none;
+    border-bottom: 1px solid var(--border);
+    padding: 1.5rem;
+    height: auto;
+    min-height: 52vw;
+  }
+  .bio__photo {
+    max-width: 100%;
+    max-height: 62vw;
+  }
+  .bio__photo-note { display: none; }
   .bio__copy { padding: 2.4rem 1.5rem; justify-content: flex-start; }
 
   /* ── Contact ──────────────────────────────────── */
