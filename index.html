@@ -534,12 +534,20 @@ textarea.form__in { resize: none; height: 78px; }
 .form__status--err { color: rgba(210,140,140,0.9); }
 
 /* ── VIDEO ───────────────────────────────────────── */
+#pg-video { overflow-y: auto; scrollbar-width: none; }
+#pg-video::-webkit-scrollbar { display: none; }
+
 .video-page {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.video-hero {
+  flex-shrink: 0;
+  padding: 2rem 2.4rem 1.5rem;
+  display: flex;
   justify-content: center;
-  height: 100%;
-  padding: 2rem 2.4rem;
 }
 .video-embed {
   width: 100%;
@@ -554,15 +562,55 @@ textarea.form__in { resize: none; height: 78px; }
   height: 100%;
   border: none;
 }
+
+.video-info {
+  padding: 0 2.4rem 3rem;
+  max-width: 960px;
+  width: 100%;
+  margin: 0 auto;
+}
+.video-info__title {
+  font-size: clamp(1.4rem, 3vw, 2.2rem);
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.7rem;
+}
+.video-info__credits {
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  color: var(--dim);
+  line-height: 1.7;
+  margin-bottom: 0.45rem;
+}
+.video-info__voice {
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 1.5rem;
+}
+.video-info__desc {
+  font-size: 0.8rem;
+  font-weight: 300;
+  line-height: 1.9;
+  color: var(--dim);
+  max-width: 540px;
+}
+
 @media (max-width: 860px) {
-  .video-page {
+  .video-hero {
     padding: 0;
-    align-items: stretch;
+    height: calc(100vh - 60px - env(safe-area-inset-bottom, 0px));
+    flex-shrink: 0;
   }
   .video-embed {
     max-width: 100%;
     aspect-ratio: unset;
     height: 100%;
+    width: 100%;
+  }
+  .video-info {
+    padding: 1.8rem 1.5rem 3rem;
   }
 }
 
@@ -935,13 +983,21 @@ textarea.form__in { resize: none; height: 78px; }
     <!-- ── VIDEO ─────────────────────────────── -->
     <section class="page" id="pg-video" data-pid="video">
       <div class="video-page">
-        <div class="video-embed">
-          <iframe
-            src="https://player.vimeo.com/video/1187055145?title=0&byline=0&portrait=0&dnt=1"
-            allow="autoplay; fullscreen; picture-in-picture"
-            allowfullscreen
-            title="Good Person">
-          </iframe>
+        <div class="video-hero">
+          <div class="video-embed">
+            <iframe
+              src="https://player.vimeo.com/video/1187055145?title=0&byline=0&portrait=0&dnt=1"
+              allow="autoplay; fullscreen; picture-in-picture"
+              allowfullscreen
+              title="Good Person">
+            </iframe>
+          </div>
+        </div>
+        <div class="video-info">
+          <h2 class="video-info__title">Good Person</h2>
+          <p class="video-info__credits">A project I co-directed, created, and filmed with Jonas Byars</p>
+          <p class="video-info__voice">Voice and monologue — Dakota Brown</p>
+          <p class="video-info__desc">This short film is about keeping up a moral image and how its meaning can fade over time. The repeated phrase "A Good Person" shows the inner conflict and the balance between belief and losing value.</p>
         </div>
       </div>
     </section>
