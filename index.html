@@ -306,20 +306,19 @@ img    { display:block; max-width:100%; }
 .gallery.is-on {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 10px;
+  row-gap: 10px;
+  column-gap: 10px;
   padding: 10px;
   align-content: start;
+  align-items: start;
 }
 .gallery__item {
-  aspect-ratio: 1;
   overflow: hidden;
   cursor: pointer;
 }
 .gallery__item-img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center top;
+  height: auto;
   display: block;
   transition: opacity 0.2s ease;
 }
@@ -754,7 +753,8 @@ textarea.form__in { resize: none; height: 78px; }
   /* ── Gallery mobile ─────────────────────────────── */
   .gallery.is-on {
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)) !important;
-    gap: 8px !important;
+    row-gap: 8px !important;
+    column-gap: 8px !important;
     padding: 54px 8px 8px !important;
   }
 
