@@ -763,16 +763,15 @@ textarea.form__in { resize: none; height: 78px; }
   /* ── Bio ──────────────────────────────────────── */
   #pg-about { overflow: hidden; }
   .bio {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto auto;
+    display: flex;
+    flex-direction: column;
     overflow-y: auto;
-    min-height: 100%;
     height: 100%;
-    align-items: start;
   }
   .bio__photo-col {
     position: static;
     height: auto;
+    flex-shrink: 0;
     order: -1;
     border-left: none;
     border-bottom: 1px solid var(--border);
@@ -785,7 +784,7 @@ textarea.form__in { resize: none; height: 78px; }
     transition: none;
   }
   .bio__photo-note { display: none; }
-  .bio__copy { padding: 2rem 1.5rem 3rem; justify-content: flex-start; }
+  .bio__copy { flex-shrink: 0; padding: 2rem 1.5rem 3rem; justify-content: flex-start; }
 
   /* ── Contact ──────────────────────────────────── */
   .inquiry { grid-template-columns: 1fr; overflow-y: auto; }
