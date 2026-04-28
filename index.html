@@ -294,7 +294,7 @@ img    { display:block; max-width:100%; }
 .strip__th:hover      { opacity: 0.65; }
 .strip__th.is-active  { opacity: 1; outline-color: var(--fg); }
 
-/* ── GALLERY (masonry) ───────────────────────────── */
+/* ── GALLERY (collage) ───────────────────────────── */
 .gallery {
   flex: 1;
   overflow-y: auto;
@@ -306,23 +306,28 @@ img    { display:block; max-width:100%; }
 .gallery.is-on {
   display: block;
   column-count: 3;
-  column-gap: 6px;
-  padding: 1.2rem 1.5rem 1.5rem;
+  column-gap: 1.6rem;
+  padding: 2.4rem 2.2rem 2.4rem;
 }
 .gallery__item {
   break-inside: avoid;
-  margin-bottom: 6px;
-  overflow: hidden;
-  border-radius: 2px;
+  margin-bottom: 1.4rem;
   cursor: pointer;
+  transform: rotate(var(--rot, 0deg));
+  transform-origin: center center;
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+  box-shadow: 2px 4px 20px rgba(0,0,0,0.5);
+  display: block;
+}
+.gallery__item:hover {
+  transform: rotate(0deg) scale(1.03);
+  box-shadow: 4px 10px 32px rgba(0,0,0,0.7);
 }
 .gallery__item-img {
   width: 100%;
   height: auto;
   display: block;
-  transition: transform 0.55s cubic-bezier(0.4,0,0.2,1);
 }
-.gallery__item:hover .gallery__item-img { transform: scale(1.04); }
 
 /* ── BIO (about) ─────────────────────────────────── */
 .bio {
@@ -750,19 +755,22 @@ textarea.form__in { resize: none; height: 78px; }
   }
   .strip { display: none !important; }
 
-  /* ── Gallery: 2-col masonry, all photos ────────── */
+  /* ── Gallery: 2-col collage, mobile ────────────── */
   .gallery.is-on {
     display: block !important;
     column-count: 2;
-    column-gap: 3px;
-    padding: 52px 3px 8px;
+    column-gap: 1rem;
+    padding: 56px 1rem 1rem;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
     height: 100%;
     cursor: default;
   }
-  .gallery__item { margin-bottom: 3px; border-radius: 0; }
+  .gallery__item {
+    margin-bottom: 1rem;
+    --rot: 0deg; /* no rotation on mobile — too small */
+  }
 
   /* ── Bio ──────────────────────────────────────── */
   .bio { grid-template-columns: 1fr; }
@@ -1307,7 +1315,7 @@ eStage.addEventListener('touchend', e => {
   });
 })();
 
-/* ── GALLERY (masonry) ─────────────────────────── */
+/* ── GALLERY (collage) ─────────────────────────── */
 function buildGallery() {
   if (eGallery.dataset.ready) return;
   eGallery.dataset.ready = '1';
@@ -1315,6 +1323,9 @@ function buildGallery() {
   PHOTOS.forEach((p, i) => {
     const item = document.createElement('div');
     item.className = 'gallery__item';
+    // Random rotation: most photos subtle, occasional more dramatic tilt
+    const rot = (Math.random() * 7 - 3.5).toFixed(2);
+    item.style.setProperty('--rot', `${rot}deg`);
     const img = document.createElement('img');
     img.className = 'gallery__item-img';
     img.src = p.src; img.alt = ''; img.loading = 'lazy';
