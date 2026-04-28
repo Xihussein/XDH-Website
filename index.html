@@ -1477,7 +1477,7 @@ function lenis(container) {
     container.scrollTop = cur;
   }
 
-  container.addEventListener('wheel', e => { e.preventDefault(); to(e.deltaY * 1.5); }, { passive:false });
+  container.addEventListener('wheel', e => { e.preventDefault(); to(e.deltaY * 3.5); }, { passive:false });
 
   let drag = false, y0 = 0, s0 = 0, vy = 0, ly = 0, lt = 0;
   container.addEventListener('mousedown', e => {
