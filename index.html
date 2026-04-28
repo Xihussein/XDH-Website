@@ -294,7 +294,7 @@ img    { display:block; max-width:100%; }
 .strip__th:hover      { opacity: 0.65; }
 .strip__th.is-active  { opacity: 1; outline-color: var(--fg); }
 
-/* ── GALLERY (pinterest grid) ────────────────────── */
+/* ── GALLERY ─────────────────────────────────────── */
 .gallery {
   flex: 1;
   overflow-y: auto;
@@ -304,24 +304,25 @@ img    { display:block; max-width:100%; }
 }
 .gallery::-webkit-scrollbar { display: none; }
 .gallery.is-on {
-  display: block;
-  column-count: 3;
-  column-gap: 4px;
-  padding: 4px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  padding: 2px;
+  align-content: start;
 }
 .gallery__item {
-  break-inside: avoid;
-  margin-bottom: 4px;
+  aspect-ratio: 1;
+  overflow: hidden;
   cursor: pointer;
-  display: block;
 }
 .gallery__item-img {
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: cover;
   display: block;
   transition: opacity 0.2s ease;
 }
-.gallery__item:hover .gallery__item-img { opacity: 0.85; }
+.gallery__item:hover .gallery__item-img { opacity: 0.8; }
 
 /* ── BIO (about) ─────────────────────────────────── */
 .bio {
@@ -749,19 +750,11 @@ textarea.form__in { resize: none; height: 78px; }
   }
   .strip { display: none !important; }
 
-  /* ── Gallery: 2-col pinterest, mobile ──────────── */
+  /* ── Gallery mobile ─────────────────────────────── */
   .gallery.is-on {
-    display: block !important;
-    column-count: 2;
-    column-gap: 3px;
-    padding: 52px 3px 3px;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
-    height: 100%;
-    cursor: default;
+    grid-template-columns: repeat(3, 1fr) !important;
+    padding-top: 54px;
   }
-  .gallery__item { margin-bottom: 3px; }
 
   /* ── Bio ──────────────────────────────────────── */
   .bio { grid-template-columns: 1fr; }
@@ -1306,11 +1299,10 @@ eStage.addEventListener('touchend', e => {
   });
 })();
 
-/* ── GALLERY (pinterest grid) ──────────────────── */
+/* ── GALLERY ───────────────────────────────────── */
 function buildGallery() {
   if (eGallery.dataset.ready) return;
   eGallery.dataset.ready = '1';
-
   PHOTOS.forEach((p, i) => {
     const item = document.createElement('div');
     item.className = 'gallery__item';
