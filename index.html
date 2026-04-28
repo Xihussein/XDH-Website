@@ -543,6 +543,10 @@ textarea.form__in { resize: none; height: 78px; }
   min-height: 100%;
 }
 
+.video-section + .video-section {
+  border-top: 1px solid var(--border);
+}
+
 .video-hero {
   flex-shrink: 0;
   padding: 2rem 2.4rem 1.5rem;
@@ -983,22 +987,43 @@ textarea.form__in { resize: none; height: 78px; }
     <!-- ── VIDEO ─────────────────────────────── -->
     <section class="page" id="pg-video" data-pid="video">
       <div class="video-page">
-        <div class="video-hero">
-          <div class="video-embed">
-            <iframe
-              src="https://player.vimeo.com/video/1187055145?title=0&byline=0&portrait=0&dnt=1"
-              allow="autoplay; fullscreen; picture-in-picture"
-              allowfullscreen
-              title="Good Person">
-            </iframe>
+
+        <div class="video-section">
+          <div class="video-hero">
+            <div class="video-embed">
+              <iframe
+                src="https://player.vimeo.com/video/1187055145?title=0&byline=0&portrait=0&dnt=1"
+                allow="autoplay; fullscreen; picture-in-picture"
+                allowfullscreen
+                title="Good Person">
+              </iframe>
+            </div>
+          </div>
+          <div class="video-info">
+            <h2 class="video-info__title">Good Person</h2>
+            <p class="video-info__credits">A project I co-directed, created, and filmed with Jonas Byars</p>
+            <p class="video-info__voice">Voice and monologue — Dakota Brown</p>
+            <p class="video-info__desc">This short film is about keeping up a moral image and how its meaning can fade over time. The repeated phrase "A Good Person" shows the inner conflict and the balance between belief and losing value.</p>
           </div>
         </div>
-        <div class="video-info">
-          <h2 class="video-info__title">Good Person</h2>
-          <p class="video-info__credits">A project I co-directed, created, and filmed with Jonas Byars</p>
-          <p class="video-info__voice">Voice and monologue — Dakota Brown</p>
-          <p class="video-info__desc">This short film is about keeping up a moral image and how its meaning can fade over time. The repeated phrase "A Good Person" shows the inner conflict and the balance between belief and losing value.</p>
+
+        <div class="video-section">
+          <div class="video-hero">
+            <div class="video-embed">
+              <iframe
+                src="https://player.vimeo.com/video/1187146448?title=0&byline=0&portrait=0&dnt=1&loop=1"
+                allow="autoplay; fullscreen; picture-in-picture"
+                allowfullscreen
+                title="I thought I needed change, but I needed...">
+              </iframe>
+            </div>
+          </div>
+          <div class="video-info">
+            <h2 class="video-info__title">I thought I needed change, but I needed...</h2>
+            <p class="video-info__credits">Co-created and directed with Jonas Byars</p>
+          </div>
         </div>
+
       </div>
     </section>
 
