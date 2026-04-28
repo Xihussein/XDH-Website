@@ -298,29 +298,26 @@ img    { display:block; max-width:100%; }
 .gallery { display: none; }
 .gallery.is-on {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-  padding: 24px;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 4px;
+  padding: 8px;
   flex: 1;
   min-height: 0;
-  overflow-y: auto;
-  align-content: start;
-  scrollbar-width: none;
 }
-.gallery.is-on::-webkit-scrollbar { display: none; }
 .gallery__item {
-  cursor: pointer;
-  border-radius: 2px;
   overflow: hidden;
+  cursor: pointer;
 }
 .gallery__item-img {
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: cover;
   display: block;
   pointer-events: none;
-  transition: opacity 0.18s ease;
+  transition: opacity 0.15s ease;
 }
-.gallery__item:hover .gallery__item-img { opacity: 0.72; }
+.gallery__item:hover .gallery__item-img { opacity: 0.68; }
 
 /* ── BIO (about) ─────────────────────────────────── */
 .bio {
@@ -749,34 +746,16 @@ textarea.form__in { resize: none; height: 78px; }
   .strip { display: none !important; }
 
   /* ── Gallery mobile ─────────────────────────────── */
-  /* The page element itself becomes the scroll container — eliminates
-     the nested-scroll-inside-overflow:hidden problem on iOS */
-  #pg-work.gallery-mode {
-    overflow-y: scroll;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior-y: contain;
-  }
-  #pg-work.gallery-mode .bar {
-    position: sticky;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 20;
-    background: rgba(17,17,17,0.92);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border);
-    padding: 0.9rem 1rem;
-  }
-  #pg-work.gallery-mode .gallery.is-on {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-    padding: 16px;
-    position: static;
-    overflow: visible;
-    height: auto;
+  .gallery.is-on {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(7, 1fr);
+    gap: 3px;
+    padding: 0;
+    position: absolute;
+    top: 58px;
+    left: 0; right: 0; bottom: 0;
     flex: none;
-    min-height: 0;
+    min-height: unset;
   }
 
   /* ── Bio ──────────────────────────────────────── */
@@ -802,7 +781,6 @@ textarea.form__in { resize: none; height: 78px; }
   .bar { padding: 0.75rem 0.85rem; }
   .bar__toggle { width: 30px; height: 30px; }
   .stage__idx { font-size: 0.54rem; padding: 0.26rem 0.65rem; }
-  #pg-work.gallery-mode .gallery.is-on { gap: 12px; padding: 12px; }
   .bio__copy { padding: 1.8rem 1.2rem; }
   .inquiry__info { padding: 1.5rem 1.2rem 1.2rem; }
   .inquiry__form-wrap { padding: 1.5rem 1.2rem; }
@@ -1173,14 +1151,12 @@ document.querySelector('.sidebar__logo')
 function setMode(mode) {
   S.mode = mode;
   const isStage = mode === 'stage';
-  const pgWork  = el('pg-work');
   eStage.classList.toggle('is-off', !isStage);
   eStrip.classList.toggle('is-off', !isStage);
   el('vt-stage').classList.toggle('is-on', isStage);
   el('vt-gallery').classList.toggle('is-on', !isStage);
-  pgWork.classList.toggle('gallery-mode', !isStage);
   if (!isStage) { eGallery.classList.add('is-on'); buildGallery(); }
-  else          { eGallery.classList.remove('is-on'); pgWork.scrollTop = 0; }
+  else          { eGallery.classList.remove('is-on'); }
 }
 
 el('vt-stage').addEventListener('click',   () => setMode('stage'));
