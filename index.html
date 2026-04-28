@@ -323,14 +323,14 @@ img    { display:block; max-width:100%; }
 .bio {
   display: grid;
   grid-template-columns: 1fr 1.6fr;
-  height: 100%;
+  min-height: 100%;
+  align-items: start;
 }
 .bio__copy {
-  padding: 3.8rem 3rem 2.5rem 2.4rem;
+  padding: 3.8rem 3rem 40vh 2.4rem;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  overflow-y: auto;
+  justify-content: flex-start;
 }
 .bio__eyebrow {
   font-size: 0.6rem;
@@ -372,7 +372,9 @@ img    { display:block; max-width:100%; }
 .bio__chip:hover { border-color: var(--fg); color: var(--fg); }
 
 .bio__photo-col {
-  position: relative;
+  position: sticky;
+  top: 0;
+  height: 100vh;
   border-left: 1px solid var(--border);
   transition: border-color var(--t) var(--ease);
   overflow: hidden;
@@ -383,6 +385,8 @@ img    { display:block; max-width:100%; }
   object-fit: cover;
   object-position: center top;
   display: block;
+  clip-path: inset(0 0 100% 0);
+  transition: clip-path 0.3s ease-out;
 }
 .bio__photo-note {
   position: absolute;
@@ -514,6 +518,9 @@ textarea.form__in { resize: none; height: 78px; }
 }
 .form__status--ok  { color: rgba(160,210,160,0.9); }
 .form__status--err { color: rgba(210,140,140,0.9); }
+
+/* ── ABOUT PAGE ──────────────────────────────────── */
+#pg-about { overflow-y: auto; -webkit-overflow-scrolling: touch; }
 
 /* ── VIDEO ───────────────────────────────────────── */
 #pg-video { overflow-y: scroll; scrollbar-width: none; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
@@ -754,27 +761,31 @@ textarea.form__in { resize: none; height: 78px; }
   }
 
   /* ── Bio ──────────────────────────────────────── */
+  #pg-about { overflow: hidden; }
   .bio {
     grid-template-columns: 1fr;
     grid-template-rows: auto auto;
     overflow-y: auto;
+    min-height: 100%;
     height: 100%;
+    align-items: start;
   }
   .bio__photo-col {
+    position: static;
+    height: auto;
     order: -1;
     border-left: none;
     border-bottom: 1px solid var(--border);
-    overflow: hidden;
-    height: auto;
   }
   .bio__photo {
     width: 100%;
     height: auto;
     object-fit: initial;
-    object-position: initial;
+    clip-path: none;
+    transition: none;
   }
   .bio__photo-note { display: none; }
-  .bio__copy { padding: 2.4rem 1.5rem; justify-content: flex-start; }
+  .bio__copy { padding: 2rem 1.5rem 3rem; justify-content: flex-start; }
 
   /* ── Contact ──────────────────────────────────── */
   .inquiry { grid-template-columns: 1fr; overflow-y: auto; }
@@ -1371,6 +1382,24 @@ protect(eImgA);
 protect(eImgB);
 protect(el('about-portrait'));
 
+
+/* ── ABOUT PHOTO REVEAL ────────────────────────── */
+(function () {
+  const page  = document.getElementById('pg-about');
+  const photo = page && page.querySelector('.bio__photo');
+  if (!page || !photo) return;
+
+  function update() {
+    const max = page.scrollHeight - page.clientHeight;
+    if (max <= 0) { photo.style.clipPath = 'inset(0 0 0% 0)'; return; }
+    // Finish reveal at 85% scroll so photo is fully visible before bottom
+    const pct    = Math.min(1, page.scrollTop / max / 0.85);
+    const bottom = Math.max(0, 100 - pct * 100);
+    photo.style.clipPath = `inset(0 0 ${bottom}% 0)`;
+  }
+
+  page.addEventListener('scroll', update, { passive: true });
+})();
 
 /* ── INIT ──────────────────────────────────────── */
 initSlide();
