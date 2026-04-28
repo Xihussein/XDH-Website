@@ -312,12 +312,15 @@ img    { display:block; max-width:100%; }
   scrollbar-width: none;
 }
 .gallery.is-on::-webkit-scrollbar { display: none; }
-.gallery__item { cursor: pointer; }
+.gallery__item {
+  cursor: pointer;
+  touch-action: pan-y;
+}
 .gallery__item-img {
   width: 100%;
   height: auto;
   display: block;
-  opacity: 1;
+  pointer-events: none;
   transition: opacity 0.2s ease;
 }
 .gallery__item:hover .gallery__item-img { opacity: 0.75; }
@@ -752,10 +755,9 @@ textarea.form__in { resize: none; height: 78px; }
   .gallery.is-on {
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
-    padding: 54px 10px 10px;
+    padding: 54px 10px 24px;
     position: absolute;
     inset: 0;
-    height: 100%;
     overflow-y: scroll;
   }
 
@@ -1312,10 +1314,21 @@ function buildGallery() {
     const img = document.createElement('img');
     img.className = 'gallery__item-img';
     img.src = p.src; img.alt = ''; img.loading = 'lazy';
-    img.addEventListener('click', () => openLb(i));
     protect(img);
     item.appendChild(img);
     eGallery.appendChild(item);
+
+    // Distinguish tap from scroll — only open lightbox if finger barely moved
+    let touchY = 0;
+    item.addEventListener('touchstart', e => {
+      touchY = e.touches[0].clientY;
+    }, { passive: true });
+    item.addEventListener('touchend', e => {
+      if (Math.abs(e.changedTouches[0].clientY - touchY) < 8) openLb(i);
+    }, { passive: true });
+
+    // Desktop click
+    item.addEventListener('click', () => openLb(i));
   });
 }
 
